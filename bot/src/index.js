@@ -206,12 +206,12 @@ async function handleUpdate(update, env) {
   } catch (err) {
     console.error("askGemini failed:", err);
     ok = false;
-    outgoing =
-      "Non riesco a rispondere in questo momento. Il piano completo è sempre qui: " +
-      planUrl(env);
+    outgoing = err?.quotaExceeded
+      ? "Ho esaurito la quota gratuita di richieste a Gemini per il momento. Riprova tra qualche minuto — se persiste, va controllata su https://aistudio.google.com/rate-limit."
+      : "Non riesco a rispondere in questo momento. Il piano completo è sempre qui: " + planUrl(env);
     // Diagnostica temporanea: senza questo, l'unico modo per vedere la causa
-    // reale di un errore è aprire i log del Worker su Cloudflare. Si toglie
-    // rimuovendo DEBUG_ERRORS da wrangler.toml una volta capito il problema.
+    // reale di un errore è aprire i log del Worker su Cloudflare. Si attiva
+    // rimettendo DEBUG_ERRORS="true" in wrangler.toml se serve di nuovo.
     if (env.DEBUG_ERRORS === "true") {
       outgoing += `\n\n[debug: ${String(err?.message || err).slice(0, 300)}]`;
     }
@@ -367,9 +367,14 @@ async function askGemini(env, { question, quoted, quotedFromBot, asker, history 
     // GEMINI_TIMEOUT_MS...). Qualunque cosa succeda alla chiamata con ricerca,
     // riprova senza invece di lasciar morire la risposta: meglio rispondere
     // senza internet che non rispondere affatto.
+    //
+    // Eccezione: il 429 (quota esaurita) è per progetto, non per tool. Un
+    // secondo tentativo consumerebbe un'altra unità della stessa quota già
+    // finita, per lo stesso esito certo: niente ripiego, si va dritti al
+    // controllo finale.
     try {
       res = await callGemini(env, { system, contents, withSearch: true });
-      if (!res.ok) {
+      if (!res.ok && res.status !== 429) {
         const detail = await res.text();
         console.error(`gemini: ricerca web rifiutata (${res.status}), riprovo senza. Dettaglio: ${detail.slice(0, 500)}`);
         res = await callGemini(env, { system, contents, withSearch: false });
@@ -382,6 +387,11 @@ async function askGemini(env, { question, quoted, quotedFromBot, asker, history 
     res = await callGemini(env, { system, contents, withSearch: false });
   }
 
+  if (res.status === 429) {
+    const quotaErr = new Error(`gemini 429: ${await res.text()}`);
+    quotaErr.quotaExceeded = true;
+    throw quotaErr;
+  }
   if (!res.ok) {
     throw new Error(`gemini ${res.status}: ${await res.text()}`);
   }
