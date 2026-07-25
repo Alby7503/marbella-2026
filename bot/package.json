@@ -1,0 +1,14 @@
+{
+  "name": "marbella-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bot Telegram che risponde alle domande sul piano di viaggio Marbella 2026",
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

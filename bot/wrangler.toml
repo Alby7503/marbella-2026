@@ -1,0 +1,14 @@
+name = "marbella-bot"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+# Variabili non segrete. I segreti (TELEGRAM_BOT_TOKEN, ANTHROPIC_API_KEY,
+# WEBHOOK_SECRET) NON vanno qui: si impostano come secret del Worker.
+[vars]
+BOT_USERNAME = "schiavomarbellabot"
+PLAN_URL = "https://raw.githubusercontent.com/alby7503/marbella-2026/main/index.html"
+CLAUDE_MODEL = "claude-sonnet-5"
+
+# ID del gruppo Telegram autorizzato. Vuoto = chiunque trovi il bot può usarlo.
+# Scrivi /chatid nel gruppo per farti dire l'ID, poi incollalo qui.
+ALLOWED_CHAT_IDS = ""

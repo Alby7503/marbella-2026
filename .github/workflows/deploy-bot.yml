@@ -1,0 +1,36 @@
+name: Deploy bot Telegram
+
+# Ogni push su questo branch che tocca bot/ ridistribuisce il Worker.
+# Si può anche lanciare a mano da Actions -> Deploy bot Telegram -> Run workflow.
+on:
+  push:
+    paths:
+      - "bot/**"
+      - ".github/workflows/deploy-bot.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Deploy su Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: bot
+          # Questi vengono caricati come secret del Worker, non finiscono nel codice.
+          secrets: |
+            TELEGRAM_BOT_TOKEN
+            ANTHROPIC_API_KEY
+            WEBHOOK_SECRET
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
