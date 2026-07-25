@@ -28,9 +28,9 @@ jobs:
           # Questi vengono caricati come secret del Worker, non finiscono nel codice.
           secrets: |
             TELEGRAM_BOT_TOKEN
-            ANTHROPIC_API_KEY
+            GEMINI_API_KEY
             WEBHOOK_SECRET
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}

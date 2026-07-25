@@ -3,16 +3,18 @@
  *
  * Cloudflare Worker: Telegram chiama questo endpoint via webhook a ogni
  * messaggio che menziona il bot. Il Worker scarica il piano di viaggio
- * (index.html da GitHub Pages), lo converte in testo e lo passa a Claude
+ * (index.html da GitHub Pages), lo converte in testo e lo passa a Gemini
  * come system prompt, poi rimanda la risposta nel gruppo.
  *
- * Nessun segreto nel codice: token e chiavi stanno nei secret del Worker.
+ * Usa l'API Gemini (generateContent) sul tier gratuito di Google AI
+ * Studio: nessun costo per un gruppo di poche persone. Nessun segreto
+ * nel codice: token e chiavi stanno nei secret del Worker.
  */
 
-const ANTHROPIC_API = "https://api.anthropic.com/v1/messages";
+const GEMINI_API = "https://generativelanguage.googleapis.com/v1beta";
 const TELEGRAM_API = "https://api.telegram.org";
 
-const DEFAULT_MODEL = "claude-sonnet-5";
+const DEFAULT_MODEL = "gemini-3.5-flash";
 const PLAN_TTL_MS = 10 * 60 * 1000; // ricarica il piano al massimo ogni 10 min
 const TELEGRAM_MAX_CHARS = 4000; // il limite vero è 4096
 
@@ -94,13 +96,13 @@ async function handleUpdate(update, env) {
 
   let answer;
   try {
-    answer = await askClaude(env, {
+    answer = await askGemini(env, {
       question: text,
       quoted: msg.reply_to_message?.text,
       asker: msg.from?.first_name,
     });
   } catch (err) {
-    console.error("askClaude failed:", err);
+    console.error("askGemini failed:", err);
     answer =
       "Non riesco a rispondere in questo momento. Il piano completo è sempre qui: " +
       planUrl(env);
@@ -118,9 +120,9 @@ async function handleUpdate(update, env) {
   }
 }
 
-/* ------------------------------------------------------------------ Claude */
+/* ------------------------------------------------------------------ Gemini */
 
-async function askClaude(env, { question, quoted, asker }) {
+async function askGemini(env, { question, quoted, asker }) {
   const plan = await getPlanText(env);
 
   const system = `Sei l'assistente del gruppo che sta organizzando un viaggio a Marbella dal 30 luglio al 7 agosto 2026: 4 persone, Hapimag Resort fronte mare, volo su Malaga (AGP), conducenti di 22-23 anni.
@@ -140,44 +142,43 @@ ${plan}
   if (asker) userContent += `${asker} chiede: `;
   userContent += question;
 
-  const res = await fetch(ANTHROPIC_API, {
+  const model = env.GEMINI_MODEL || DEFAULT_MODEL;
+  const url = `${GEMINI_API}/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
+
+  const res = await fetch(url, {
     method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-    },
+    headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      model: env.CLAUDE_MODEL || DEFAULT_MODEL,
-      max_tokens: 1024,
-      // Chat veloce: niente ragionamento esteso, sforzo basso.
-      thinking: { type: "disabled" },
-      output_config: { effort: "low" },
-      system: [
-        {
-          type: "text",
-          text: system,
-          // Il piano è identico a ogni richiesta: in cache costa ~1/10.
-          cache_control: { type: "ephemeral" },
-        },
-      ],
-      messages: [{ role: "user", content: userContent }],
+      systemInstruction: { parts: { text: system } },
+      contents: [{ role: "user", parts: [{ text: userContent }] }],
+      generationConfig: { maxOutputTokens: 1024 },
     }),
   });
 
   if (!res.ok) {
-    throw new Error(`anthropic ${res.status}: ${await res.text()}`);
+    throw new Error(`gemini ${res.status}: ${await res.text()}`);
   }
 
   const data = await res.json();
 
-  if (data.stop_reason === "refusal") {
+  // La richiesta può essere bloccata prima ancora di generare qualcosa
+  // (es. contenuto sensibile): in quel caso non c'è nessun candidate.
+  if (data.promptFeedback?.blockReason) {
     return "Non me la sento di rispondere a questa domanda.";
   }
 
-  const answer = (data.content || [])
-    .filter((b) => b.type === "text")
-    .map((b) => b.text)
+  const candidate = data.candidates?.[0];
+  if (!candidate) {
+    return "Non ho trovato una risposta nel piano.";
+  }
+
+  const blockedReasons = ["SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT"];
+  if (blockedReasons.includes(candidate.finishReason)) {
+    return "Non me la sento di rispondere a questa domanda.";
+  }
+
+  const answer = (candidate.content?.parts || [])
+    .map((p) => p.text || "")
     .join("")
     .trim();
 
