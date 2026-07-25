@@ -9,14 +9,16 @@
 <meta property="og:description" content="Noleggio auto ad AGP, gite in giornata, barca senza patente, serate low cost e configuratore di budget.">
 <meta property="og:type" content="article">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127958;</text></svg>">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
   :root{
     --bg:#fbfaf7; --card:#ffffff; --ink:#1d1c1a; --muted:#6b6862;
-    --accent:#c2532b; --accent-soft:#fdf1ec; --line:#e8e4dc; --sea:#1f6f8b;
+    --accent:#c2532b; --accent-soft:#fdf1ec; --line:#e8e4dc; --sea:#1f6f8b; --walk:#4a7c59;
   }
   @media (prefers-color-scheme: dark){
     :root{ --bg:#141312; --card:#1c1b19; --ink:#eceae5; --muted:#9c988f;
-           --accent:#e8825c; --accent-soft:#2a1f1a; --line:#2e2c28; --sea:#6bb3cc; }
+           --accent:#e8825c; --accent-soft:#2a1f1a; --line:#2e2c28; --sea:#6bb3cc; --walk:#6fae7c; }
   }
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
@@ -93,6 +95,15 @@
     font:14px/1.6 ui-sans-serif,system-ui,sans-serif; color:var(--muted);
   }
   h2#fonti + ul, h2#fonti ~ ul{font-size:14.5px}
+
+  /* ---- Mappa ---- */
+  .map-legend{margin:-6px 0 14px}
+  .dot{width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px; vertical-align:middle}
+  .dot-walk{background:var(--walk)} .dot-beach{background:var(--sea)} .dot-trip{background:var(--accent)}
+  #map{height:420px; border:1px solid var(--line); border-radius:10px; margin:0 0 8px}
+  .leaflet-popup-content-wrapper{background:var(--card); color:var(--ink)}
+  .leaflet-popup-tip{background:var(--card)}
+  @media (max-width:520px){ #map{height:320px} }
 
   /* ---- Configuratore budget ---- */
   .calc{
@@ -253,46 +264,46 @@
 <td>⭐ Il più economico per under 25. Contratti "senza franchigia": <strong>nessuna cauzione</strong> bloccata, quindi va bene anche con carta di debito. Limita agli under 25 i gruppi A–E. ⚠️ <strong>Non fidarti della lettera del gruppo</strong>: fatti confermare per iscritto <strong>modello esatto e litri di baule</strong> (vedi trappola n°2). Ufficio anche a Marbella centro</td>
 </tr>
 <tr>
-<td class="stato"><span class="v-est">≈</span></td>
+<td class="stato"><span class="v-ok">✓</span></td>
 <td><strong>MalagaCar.com</strong></td>
 <td>€9/giorno, min €27, <strong>max €135</strong></td>
 <td><strong>€72</strong> (il tetto non entra mai in gioco su 8 giorni)</td>
-<td>Full Pack senza cauzione dichiarato per contanti/debito, ma la loro FAQ pubblica parla solo di "credit card": <strong>contraddizione da verificare al telefono</strong> prima di fidarsene</td>
+<td>Prezzo confermato sul listino ufficiale. <strong>Contraddizione risolta, in negativo:</strong> i Termini e Condizioni ufficiali escludono esplicitamente carte di debito ("Maestro and Electron debit cards... are not accepted, nor are prepaid cards or virtual cards") — serve una vera carta di credito Visa/Mastercard intestata al conducente. Con solo carta di debito, <strong>scartala</strong>: resta Marbesol</td>
 </tr>
 <tr>
 <td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Helle Hollis</strong></td>
-<td>Young Driver Insurance (variabile)</td>
+<td>Young Driver Insurance (prezzo non pubblicato)</td>
 <td>~€100–150</td>
-<td>Accetta dai 19 anni ma su gruppi piccoli; per auto più grandi l'intestatario deve avere 23+</td>
+<td><span class="v-ok">✓</span> Regole d'età confermate sul sito ufficiale: <strong>21 anni minimo per i gruppi B/C/D/Q</strong> (23 per gli altri gruppi). <strong>A 21+ nessun supplemento young driver sui gruppi B/C/D</strong> — utile per voi (22-23 anni). Il gruppo Q (probabile fascia station wagon) richiede comunque Young Driver's Insurance + super excess waiver: prezzo non indicato online, va chiesto in preventivo</td>
 </tr>
 <tr>
 <td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Europcar</strong></td>
 <td>tariffa giornaliera, <strong>cap ~€175/noleggio</strong></td>
 <td>~€175</td>
-<td></td>
+<td>Pagina ufficiale conferma solo genericamente "26 anni o meno, piccolo supplemento": nessuna cifra pubblicata per la Spagna, serve preventivo live</td>
 </tr>
 <tr>
 <td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Sixt</strong></td>
 <td>supplemento sotto i 23 anni</td>
 <td>variabile</td>
-<td>A 23 anni compiuti potresti evitarlo</td>
+<td><span class="v-ok">✓</span> Soglia confermata sul sito ufficiale ("a young driver surcharge applies to renters under 23"), età minima Spagna 18. Nessuna cifra pubblicata: serve preventivo live. A 23 anni compiuti potresti evitarlo</td>
 </tr>
 <tr>
 <td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Alamo / Enterprise</strong></td>
-<td><strong>€23/giorno</strong> (21-24 anni)</td>
+<td><strong>€23/giorno</strong> (21-24 anni, cap 10 giorni)</td>
 <td><strong>€184</strong></td>
-<td>Il più caro</td>
+<td>Cifra confermata da fonte terza (non il sito ufficiale, che richiede preventivo live per vederla) — coerente con la stima già qui. Il più caro</td>
 </tr>
 <tr>
-<td class="stato"><span class="v-est">≈</span></td>
+<td class="stato"><span class="v-ok">✓</span></td>
 <td><strong>Avis</strong></td>
-<td>supplemento fino a 25 anni</td>
-<td>variabile</td>
-<td></td>
+<td>supplemento <strong>~£17/giorno ≈ €19–20/giorno</strong> (cap 10 giorni)</td>
+<td>~€152–160 (8 gg)</td>
+<td>Confermato sul sito ufficiale Avis: si applica sotto i 25 anni, età minima Spagna 21, serve carta di credito intestata al conducente. Alcuni gruppi auto esclusi per gli under 25</td>
 </tr>
 </tbody>
 </table></div>
@@ -493,10 +504,14 @@
 <tr>
 <td><strong>Caminito del Rey</strong></td>
 <td>1h30</td>
-<td>Passerella sospesa nella gola di Ardales. Biglietto €10–18, <strong>si esaurisce settimane prima: prenota ora</strong>. Ingresso e uscita distano 8 km: serve la navetta</td>
+<td>Passerella sospesa nella gola di Ardales. Biglietto <span class="v-ok">✓</span> <strong>€10 generale / €18 guidata</strong> (prezzi confermati sul sito ufficiale). Navetta obbligatoria tra ingresso e uscita (8 km), <span class="v-ok">✓</span> <strong>€2,50 a testa, solo contanti</strong>. Parcheggio al centro visitatori €2/giorno</td>
 </tr>
 </tbody>
 </table></div>
+<blockquote>
+<p><span class="badge badge-ok">✓ Verificato 25/07/2026</span> <strong>⚠️ Il 3 agosto il Caminito del Rey è chiuso</strong> — controllato sul calendario ufficiale di prenotazione: per quella data il sito segna esplicitamente "we will be closed". È il giorno in cui questo piano lo mette in programma (Lun 03/08): <strong>va spostato</strong>.</p>
+<p>Inoltre il biglietto <strong>generale (€10, autonomo) risulta già esaurito</strong> su quasi tutte le date verificate del vostro soggiorno (30/07, 31/07, 04/08, 05/08): resta solo la <strong>visita guidata a €18</strong>, con pochi slot orari residui (es. 31/07 ore 15:40 e 16:10, 05/08 ore 13:40). Il 4 agosto risulta interamente esaurito, guidata compresa. <strong>Prenotate entro pochi giorni</strong> sul sito ufficiale <a href="https://www.caminitodelrey.info/en/tickets/buy">caminitodelrey.info</a> — a 4 persone la differenza generale/guidata pesa <strong>+€32 sul gruppo</strong>.</p>
+</blockquote>
 <h3 id="opzionali-da-scegliere-se-avanza-spazio">Opzionali — da scegliere se avanza spazio</h3>
 <p>Ancora da decidere. Ronda e Caminito del Rey esauriscono già le giornate intere: da qui avete spazio solo per <strong>mezze giornate (max 1-2)</strong> senza toccare il mare. <strong>Mijas Pueblo/Ojén/Istán/Casares</strong> è pensata apposta per questo — un tardo pomeriggio via, non una giornata intera. Le altre righe sono giornate intere: per farne una dovreste rinunciare a uno dei due must o a un giorno di spiaggia.</p>
 <div class="tw"><table>
@@ -582,7 +597,7 @@
 </tr>
 <tr>
 <td>Lun 03/08</td>
-<td><strong>Must: Caminito del Rey</strong> (slot mattutino). <strong>Nient'altro in programma</strong>: sono 1h30 di auto, 7,7 km di camminata senza ombra e 1h30 di ritorno — con l'aggiunta di una mezza giornata diventa una giornata da 12 ore a 40°C</td>
+<td>⚠️ <strong>Il Caminito del Rey è chiuso questo giorno</strong> (verificato sul calendario ufficiale) — <strong>questa casella va rifatta</strong>, vedi avviso in §4. Nella pianificazione originale: 1h30 di auto, 7,7 km di camminata senza ombra e 1h30 di ritorno — con l'aggiunta di una mezza giornata diventa una giornata da 12 ore a 40°C</td>
 </tr>
 <tr>
 <td>Mar 04/08</td>
@@ -678,7 +693,7 @@
 <hr />
 <h2 id="6-da-fare-subito-in-ordine-di-urgenza">6. Da fare subito (in ordine di urgenza)</h2>
 <ol>
-<li><strong>Biglietti Caminito del Rey</strong> — si esauriscono, è il vincolo più rigido dell'itinerario</li>
+<li><strong>Biglietti Caminito del Rey</strong> — ⚠️ verificato: il 3 agosto è chiuso e il generale è già esaurito quasi ovunque nel vostro soggiorno, resta poca guidata (€18). <strong>Scegli data e prenota entro pochi giorni</strong>, è il vincolo più rigido dell'itinerario — vedi avviso in §4</li>
 <li><strong>Mail all'Hapimag</strong>: confermare disponibilità e costo del parcheggio (~€6/giorno, non prenotabile) — da questo dipende quale scenario scegliete</li>
 <li><strong>Prenotare Marbesol</strong> (preventivo €295 già confermato) — <strong>chiedere conferma per iscritto via mail</strong> che accettano carta di debito (Revolut/N26/Isybank, non Hype che è prepagata), che il conducente intestatario è quello giusto, e il gruppo auto ammesso per under 25. Alzare i limiti di spesa dell'app della carta prima di partire</li>
 <li><strong>Alhambra</strong>, se volete Granada — biglietti esauriti con settimane di anticipo</li>
@@ -916,17 +931,31 @@
 <p><strong>Il configuratore ha bisogno di JavaScript.</strong> I prezzi di ogni voce sono comunque scritti qui sopra riga per riga, quindi il conto si può fare a mano.</p>
 </noscript>
 <hr />
+<h2 id="8-mappa-dei-punti-di-interesse">8. Mappa dei punti di interesse</h2>
+<p>Tutti i luoghi citati sopra, in un colpo d'occhio: cosa si raggiunge a piedi dall'Hapimag, le spiagge che sblocca l'auto, le gite fuori Marbella.</p>
+<div class="legend map-legend">
+<span><span class="dot dot-walk"></span>A piedi da Hapimag</span>
+<span><span class="dot dot-beach"></span>Spiagge in auto</span>
+<span><span class="dot dot-trip"></span>Gite fuori Marbella</span>
+</div>
+<div id="map"></div>
+<hr />
 <h2 id="fonti">Fonti</h2>
 <ul>
 <li><a href="https://www.tripadvisor.com/Hotel_Review-g187439-d3357875-Reviews-Hapimag_Resort_Marbella-Marbella_Costa_del_Sol_Province_of_Malaga_Andalucia.html">Hapimag Resort Marbella – Tripadvisor</a></li>
 <li><a href="https://www.booking.com/hotel/es/hapimag-resort-marbella.html">Hapimag Apartments Marbella – Booking.com (posizione e parcheggio)</a></li>
 <li><a href="https://www.marbesol.com/en/faq/">Marbesol – FAQ (senza franchigia, requisiti under 25)</a> — preventivo €295 controllato direttamente sul sito ufficiale</li>
-<li><a href="https://www.malagacar.com/uk/car/faq.htm">MalagaCar.com – FAQ</a> (nota: pagina pubblica menziona solo carta di credito, in contraddizione con altre fonti sul Full Pack senza cauzione — link Terms and Conditions originale ora offline)</li>
-<li><a href="https://www.hellehollis.com/en/terms-and-conditions">Helle Hollis – Terms and Conditions</a></li>
+<li><a href="https://www.malagacar.com/uk/car/faq.htm">MalagaCar.com – FAQ</a> — conferma: serve carta di credito, non debito, al ritiro</li>
+<li><a href="https://www.malagacar.com/uk/car/car-hire-malaga-airport-rates.html">MalagaCar.com – Prezzi e condizioni</a> — <span class="v-ok">✓</span> supplemento under 25 (€9/gg, min €27, max €135) e pagamento (solo Visa/Mastercard credito, Maestro/debito/prepagate escluse) confermati qui, 25/07/2026</li>
+<li><a href="https://www.hellehollis.com/en/insurances">Helle Hollis – Insurances</a> — <span class="v-ok">✓</span> regole d'età per gruppo auto confermate qui</li>
+<li><a href="https://www.hellehollis.com/en/faq">Helle Hollis – FAQ</a> — età minima 21 per gruppi B/C/D/Q, 23 per gli altri</li>
 <li><a href="https://www.alamo.com/en/car-rental-locations/es/malaga-costa-del-sol-airport-e5al.html">Alamo – Málaga Costa del Sol Airport</a></li>
 <li><a href="https://www.enterprise.com/en/car-rental-locations/es/malaga-costa-del-sol-airport-e5u2.html">Enterprise – Málaga Costa del Sol Airport</a></li>
 <li><a href="https://www.europcar.com/en-us/p/car-rental/extras/young-driver">Europcar – Young Driver</a></li>
-<li><a href="https://www.sixt.com/car-rental/spain/malaga/">SIXT – Car rental Malaga</a></li>
+<li><a href="https://www.sixt.com/car-rental/spain/malaga/">SIXT – Car rental Malaga</a> — <span class="v-ok">✓</span> soglia "under 23" confermata qui, nessuna cifra pubblicata</li>
+<li><a href="https://www.avis.co.uk/under-25-car-hire">Avis – Car Hire Under 25</a> — <span class="v-ok">✓</span> supplemento Spagna ~£17/giorno, cap 10 giorni, età minima 21</li>
+<li><a href="https://www.caminitodelrey.info/en/tickets/buy">Caminito del Rey – Prenotazione ufficiale biglietti</a> — <span class="v-ok">✓</span> prezzi, disponibilità e chiusura del 3 agosto 2026 verificati qui, 25/07/2026</li>
+<li><a href="https://www.caminitodelrey.info/en/your-visit/parking-shuttle-bus-crv">Caminito del Rey – Parking e navetta</a> — <span class="v-ok">✓</span> prezzo navetta (€2,50, solo contanti) e parcheggio (€2/giorno) confermati qui</li>
 <li><a href="https://www.clarifycarhire.co.uk/information/young-driver-car-hire/malaga-airport">Clarify Car Hire – Young Driver Car Hire Malaga Airport</a></li>
 <li><a href="https://esmarbella.es/transporte-publico-marbella">esMarbella – Transporte público en Marbella 2026 (Línea A, tariffe)</a></li>
 <li><a href="https://www.avanzabus.com/estaciones/estacion-autobuses-marbella/">Avanza – Estación de Autobuses de Marbella</a></li>
@@ -945,6 +974,45 @@
   Documento di pianificazione. Prezzi indicativi, da verificare al momento della prenotazione.
 </footer>
 </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function(){
+  var spots = [
+    {n:"Hapimag Resort Marbella", c:"walk", lat:36.5107, lng:-4.8858, d:"Base, fronte mare"},
+    {n:"Playa de la Fontanilla", c:"walk", lat:36.5104, lng:-4.8867, d:"Spiaggia sotto casa, 0 m"},
+    {n:"Plaza de los Naranjos", c:"walk", lat:36.5099, lng:-4.8858, d:"Centro storico, 10 min a piedi"},
+    {n:"Puerto Deportivo (La Bajadilla)", c:"walk", lat:36.5114, lng:-4.8815, d:"Barca, 12 min a piedi"},
+    {n:"Puerto Banús", c:"walk", lat:36.4848, lng:-4.9527, d:"~7 km, Línea A di giorno"},
+    {n:"Cabopino / Dunas de Artola", c:"beach", lat:36.4740, lng:-4.7423, d:"20 min in auto"},
+    {n:"Playa del Cristo (Estepona)", c:"beach", lat:36.4270, lng:-5.1462, d:"35 min in auto"},
+    {n:"Playa de Bolonia", c:"beach", lat:36.0879, lng:-5.7729, d:"1h30 in auto"},
+    {n:"Ronda", c:"trip", lat:36.7461, lng:-5.1636, d:"1h00 in auto — Puente Nuevo"},
+    {n:"Setenil de las Bodegas", c:"trip", lat:36.8637, lng:-5.1808, d:"+35 min da Ronda"},
+    {n:"Caminito del Rey", c:"trip", lat:36.9280, lng:-4.7580, d:"1h30 in auto — biglietto in anticipo"},
+    {n:"Mijas Pueblo", c:"trip", lat:36.5959, lng:-4.6372, d:"~40 min — mezza giornata"},
+    {n:"Málaga città", c:"trip", lat:36.7213, lng:-4.4213, d:"1h in bus"},
+    {n:"Nerja + Frigiliana", c:"trip", lat:36.7500, lng:-3.8700, d:"1h45 in auto"},
+    {n:"Gibilterra", c:"trip", lat:36.1408, lng:-5.3536, d:"1h00 in auto — parcheggia a La Línea"},
+    {n:"Tarifa", c:"trip", lat:36.0128, lng:-5.6072, d:"1h30 in auto"},
+    {n:"Granada / Alhambra", c:"trip", lat:37.1760, lng:-3.5883, d:"2h15 in auto"},
+    {n:"Aeroporto di Málaga (AGP)", c:"trip", lat:36.6749, lng:-4.4991, d:"~55 km — ritiro/riconsegna auto"}
+  ];
+  var colors = {walk:"#4a7c59", beach:"#1f6f8b", trip:"#c2532b"};
+  var map = L.map("map", {scrollWheelZoom:false}).setView([36.55,-4.9],9);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+    maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  var group = [];
+  spots.forEach(function(s){
+    var m = L.circleMarker([s.lat,s.lng],{
+      radius:7, color:colors[s.c], fillColor:colors[s.c], fillOpacity:.85, weight:2
+    }).addTo(map).bindPopup("<strong>"+s.n+"</strong><br>"+s.d);
+    group.push(m);
+  });
+  map.fitBounds(L.featureGroup(group).getBounds(), {padding:[24,24]});
+})();
+</script>
 <script>
 (function(){
   var root = document.getElementById('calc');
