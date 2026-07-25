@@ -367,12 +367,12 @@ async function askGemini(env, { question, quoted, quotedFromBot, asker, history 
   // La richiesta può essere bloccata prima ancora di generare qualcosa
   // (es. contenuto sensibile): in quel caso non c'è nessun candidate.
   if (data.promptFeedback?.blockReason) {
-    return "Non me la sento di rispondere a questa domanda.";
+    return { text: "Non me la sento di rispondere a questa domanda.", sources: [] };
   }
 
   const candidate = data.candidates?.[0];
   if (!candidate) {
-    return "Non ho trovato una risposta nel piano.";
+    return { text: "Non ho trovato una risposta nel piano.", sources: [] };
   }
 
   const u = data.usageMetadata || {};
@@ -384,7 +384,11 @@ async function askGemini(env, { question, quoted, quotedFromBot, asker, history 
 
   const blockedReasons = ["SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT"];
   if (blockedReasons.includes(candidate.finishReason)) {
-    return "Non me la sento di rispondere a questa domanda.";
+    // RECITATION scatta spesso proprio con la ricerca web attiva, quando la
+    // risposta cita troppo da vicino il testo trovato online: prima capitava
+    // raramente, ora che quasi ogni domanda passa dal tool è diventato comune.
+    console.error(`gemini: risposta bloccata (finishReason=${candidate.finishReason})`);
+    return { text: "Non me la sento di rispondere a questa domanda.", sources: [] };
   }
 
   let answer = (candidate.content?.parts || [])
