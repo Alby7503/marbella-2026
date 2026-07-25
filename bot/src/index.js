@@ -17,6 +17,7 @@ const TELEGRAM_API = "https://api.telegram.org";
 const DEFAULT_MODEL = "gemini-3.5-flash";
 const PLAN_TTL_MS = 10 * 60 * 1000; // ricarica il piano al massimo ogni 10 min
 const TELEGRAM_MAX_CHARS = 4000; // il limite vero è 4096
+const GEMINI_TIMEOUT_MS = 25 * 1000; // oltre, meglio un errore che silenzio infinito
 
 // Cache per-isolate: sopravvive tra richieste finché il Worker resta caldo.
 let planCache = null;
@@ -145,15 +146,32 @@ ${plan}
   const model = env.GEMINI_MODEL || DEFAULT_MODEL;
   const url = `${GEMINI_API}/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: { text: system } },
-      contents: [{ role: "user", parts: [{ text: userContent }] }],
-      generationConfig: { maxOutputTokens: 1024 },
-    }),
-  });
+  // Senza timeout, una risposta lenta o appesa di Gemini (più probabile sul
+  // tier gratuito) lascia l'utente senza risposta all'infinito invece di
+  // arrivare al fallback qui sotto.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({
+        systemInstruction: { parts: { text: system } },
+        contents: [{ role: "user", parts: [{ text: userContent }] }],
+        generationConfig: { maxOutputTokens: 400 },
+      }),
+    });
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error(`gemini timeout dopo ${GEMINI_TIMEOUT_MS}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!res.ok) {
     throw new Error(`gemini ${res.status}: ${await res.text()}`);
