@@ -2,6 +2,13 @@ name = "marbella-bot"
 main = "src/index.js"
 compatibility_date = "2026-07-01"
 
+# Senza questo, la scheda Logs/Observability della dashboard resta vuota
+# anche se le richieste arrivano regolarmente — un Worker creato da riga di
+# comando (come questo) non ce l'ha attivo di default, a differenza di uno
+# creato dalla dashboard.
+[observability]
+enabled = true
+
 # Variabili non segrete. I segreti (TELEGRAM_BOT_TOKEN, GEMINI_API_KEY,
 # WEBHOOK_SECRET) NON vanno qui: si impostano come secret del Worker.
 [vars]
