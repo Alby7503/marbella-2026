@@ -97,10 +97,14 @@ async function handleUpdate(update, env) {
       text:
         "Ciao, sono lo Schiavo di Marbella. Conosco il piano del viaggio " +
         "(30/07 – 07/08/2026) e rispondo alle vostre domande.\n\n" +
-        "Menzionatemi o rispondete a un mio messaggio, per esempio:\n" +
-        "• quanto costa la barca senza patente?\n" +
-        "• quanto ci vuole per arrivare a Ronda?\n" +
-        "• che si fa martedì?\n\n" +
+        "Il modo più affidabile per chiedermi qualcosa nel gruppo:\n" +
+        "/chiedi quanto costa la barca per 4 ore?\n\n" +
+        "In alternativa potete rispondere a un mio messaggio scrivendo solo " +
+        "la domanda. (Le semplici menzioni con la @ a volte Telegram non me " +
+        "le consegna nei gruppi con i topic.)\n\n" +
+        "Altri esempi:\n" +
+        "• /chiedi quanto ci vuole per arrivare a Ronda?\n" +
+        "• /chiedi che si fa martedì?\n\n" +
         "Piano completo: " + planUrl(env),
     });
     return;
@@ -119,7 +123,24 @@ async function handleUpdate(update, env) {
     return;
   }
 
-  console.log("ramo domanda vera: chiamo Gemini");
+  // In privacy mode Telegram non consegna in modo affidabile le @menzioni
+  // nei supergruppi con i topic (i comandi e le risposte al bot sì). /chiedi
+  // è quindi la strada che funziona sempre per fare una domanda in gruppo.
+  const askMatch = text.match(/^\/(chiedi|ask)\b\s*([\s\S]*)$/i);
+  const question = askMatch ? askMatch[2].trim() : text;
+
+  if (askMatch && !question) {
+    console.log("ramo /chiedi senza domanda");
+    await tg(env, "sendMessage", {
+      chat_id: chatId,
+      message_thread_id: threadId,
+      reply_to_message_id: msg.message_id,
+      text: "Scrivi la domanda dopo il comando, per esempio:\n/chiedi quanto costa la barca per 4 ore?",
+    });
+    return;
+  }
+
+  console.log(`ramo domanda vera (${askMatch ? "/chiedi" : "menzione o reply"}): chiamo Gemini`);
   await tg(env, "sendChatAction", {
     chat_id: chatId,
     message_thread_id: threadId,
@@ -129,7 +150,7 @@ async function handleUpdate(update, env) {
   let answer;
   try {
     answer = await askGemini(env, {
-      question: text,
+      question,
       quoted: msg.reply_to_message?.text,
       asker: msg.from?.first_name,
     });
@@ -189,7 +210,14 @@ ${plan}
       body: JSON.stringify({
         systemInstruction: { parts: { text: system } },
         contents: [{ role: "user", parts: [{ text: userContent }] }],
-        generationConfig: { maxOutputTokens: 400 },
+        generationConfig: {
+          // I token di ragionamento vengono contati dentro maxOutputTokens:
+          // con un tetto basso il ragionamento se li mangia quasi tutti e la
+          // risposta esce troncata a metà parola. Tetto ampio + ragionamento
+          // al minimo (a queste domande non serve) risolve entrambe le cose.
+          maxOutputTokens: 2048,
+          thinkingConfig: { thinkingLevel: "minimal" },
+        },
       }),
     },
     GEMINI_TIMEOUT_MS,
@@ -214,6 +242,13 @@ ${plan}
     return "Non ho trovato una risposta nel piano.";
   }
 
+  const u = data.usageMetadata || {};
+  console.log(
+    `gemini: finishReason=${candidate.finishReason} ` +
+      `token risposta=${u.candidatesTokenCount ?? "?"} ` +
+      `ragionamento=${u.thoughtsTokenCount ?? 0}`
+  );
+
   const blockedReasons = ["SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT"];
   if (blockedReasons.includes(candidate.finishReason)) {
     return "Non me la sento di rispondere a questa domanda.";
@@ -224,7 +259,16 @@ ${plan}
     .join("")
     .trim();
 
-  return answer || "Non ho trovato una risposta nel piano.";
+  if (!answer) return "Non ho trovato una risposta nel piano.";
+
+  // Se il tetto di token è stato raggiunto la frase resta tronca a metà:
+  // meglio dirlo che lasciar credere che la risposta sia completa.
+  if (candidate.finishReason === "MAX_TOKENS") {
+    console.error("gemini: risposta troncata (MAX_TOKENS)");
+    return answer + "\n\n[…risposta troncata. Chiedimi il dettaglio che ti serve.]";
+  }
+
+  return answer;
 }
 
 /* --------------------------------------------------------------------- Rete */
