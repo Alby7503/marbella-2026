@@ -11,4 +11,4 @@ GEMINI_MODEL = "gemini-3.5-flash"
 
 # ID del gruppo Telegram autorizzato. Vuoto = chiunque trovi il bot può usarlo.
 # Scrivi /chatid nel gruppo per farti dire l'ID, poi incollalo qui.
-ALLOWED_CHAT_IDS = ""
+ALLOWED_CHAT_IDS = "-1003985301142"
