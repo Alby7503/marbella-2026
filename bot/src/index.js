@@ -65,12 +65,18 @@ async function handleUpdate(update, env) {
   }
 
   const chatId = msg.chat.id;
-  console.log(`update ricevuto da chat ${chatId}: "${msg.text.slice(0, 200)}"`);
+  const threadId = topicThreadId(msg);
+  console.log(
+    `update ricevuto da chat ${chatId}` +
+      (threadId ? ` (topic ${threadId})` : " (nessun topic)") +
+      `: "${msg.text.slice(0, 200)}"`
+  );
 
   if (!isAllowedChat(chatId, env)) {
     console.log(`chat ${chatId} non in ALLOWED_CHAT_IDS ("${env.ALLOWED_CHAT_IDS}") — mando il rifiuto`);
     await tg(env, "sendMessage", {
       chat_id: chatId,
+      message_thread_id: threadId,
       text:
         "Questo bot è privato: è configurato solo per il gruppo Marbella 2026.\n" +
         `ID di questa chat: ${chatId}`,
@@ -85,6 +91,7 @@ async function handleUpdate(update, env) {
     console.log("ramo /start /help (o testo vuoto dopo la menzione)");
     await tg(env, "sendMessage", {
       chat_id: chatId,
+      message_thread_id: threadId,
       reply_to_message_id: msg.message_id,
       text:
         "Ciao, sono lo Schiavo di Marbella. Conosco il piano del viaggio " +
@@ -102,14 +109,21 @@ async function handleUpdate(update, env) {
     console.log("ramo /chatid");
     await tg(env, "sendMessage", {
       chat_id: chatId,
+      message_thread_id: threadId,
       reply_to_message_id: msg.message_id,
-      text: `ID di questa chat: ${chatId}`,
+      text:
+        `ID di questa chat: ${chatId}` +
+        (threadId ? `\nID di questo topic: ${threadId}` : ""),
     });
     return;
   }
 
   console.log("ramo domanda vera: chiamo Gemini");
-  await tg(env, "sendChatAction", { chat_id: chatId, action: "typing" });
+  await tg(env, "sendChatAction", {
+    chat_id: chatId,
+    message_thread_id: threadId,
+    action: "typing",
+  });
 
   let answer;
   try {
@@ -129,6 +143,7 @@ async function handleUpdate(update, env) {
   for (const part of chunkText(answer, TELEGRAM_MAX_CHARS)) {
     await tg(env, "sendMessage", {
       chat_id: chatId,
+      message_thread_id: threadId,
       reply_to_message_id: msg.message_id,
       text: part,
       // Niente parse_mode: Claude scrive in testo semplice e così un
@@ -306,6 +321,27 @@ async function tg(env, method, payload) {
     console.log(`telegram ${method}: ok (chat ${payload.chat_id ?? "?"})`);
   }
   return res;
+}
+
+/**
+ * Id del topic a cui rispondere in un supergruppo con i forum attivi.
+ *
+ * In un forum tutti i topic condividono lo stesso chat.id: senza rimandare
+ * indietro message_thread_id la risposta finisce nel topic "General" invece
+ * che dove è stata fatta la domanda — e chi guarda il proprio topic non vede
+ * comparire nulla.
+ *
+ * Due casi in cui NON va passato:
+ * - messaggi che non appartengono a un topic (is_topic_message assente):
+ *   in un gruppo normale message_thread_id può comparire per i thread di
+ *   risposta, ma non è un topic;
+ * - il topic "General" (id 1): Telegram rifiuta l'invio se glielo passi,
+ *   va trattato come un supergruppo normale.
+ */
+function topicThreadId(msg) {
+  if (!msg.is_topic_message) return undefined;
+  const id = msg.message_thread_id;
+  return typeof id === "number" && id !== 1 ? id : undefined;
 }
 
 function isAllowedChat(chatId, env) {
