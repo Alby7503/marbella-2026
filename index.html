@@ -70,6 +70,24 @@
   tr:last-child td{border-bottom:none}
   tbody tr:hover{background:var(--accent-soft)}
   td strong{color:var(--accent)}
+  .badge{
+    display:inline-flex; align-items:center; gap:4px;
+    font:700 12px/1 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+    padding:3px 10px; border-radius:999px; letter-spacing:.01em; white-space:nowrap;
+  }
+  .badge-ok{ background:#e2f3e7; color:#1c7a43; }
+  .badge-est{ background:var(--accent-soft); color:var(--accent); }
+  @media (prefers-color-scheme: dark){ .badge-ok{ background:#153524; color:#5fd696; } }
+  .legend{
+    display:flex; flex-wrap:wrap; gap:8px 22px; align-items:center;
+    font:14px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+    color:var(--muted); margin:-6px 0 26px;
+  }
+  .v-ok{ color:#1c7a43; font-weight:700 }
+  .v-est{ color:var(--accent); font-weight:700 }
+  @media (prefers-color-scheme: dark){ .v-ok{ color:#5fd696 } }
+  th.stato{ width:1%; text-align:center }
+  td.stato{ text-align:center; white-space:nowrap }
   footer{
     margin-top:60px; padding-top:24px; border-top:1px solid var(--line);
     font:14px/1.6 ui-sans-serif,system-ui,sans-serif; color:var(--muted);
@@ -91,6 +109,10 @@
 <blockquote>
 <p>Nota: i prezzi live dei noleggi non sono estraibili in tempo reale da qui. Le cifre sotto sono <strong>stime realistiche basate su listini e politiche pubblicate</strong>, da confermare al momento della prenotazione. A pochi giorni dalla partenza in alta stagione i prezzi salgono di giorno in giorno: <strong>prenota subito</strong>.</p>
 </blockquote>
+<div class="legend">
+<span><span class="badge badge-ok">✓ Verificato</span> confermato di persona — telefonata, mail, prenotazione</span>
+<span><span class="badge badge-est">≈ Stima</span> ricerca online, da confermare prima di prenotare</span>
+</div>
 <hr />
 <h2 id="0-il-punto-di-partenza-hapimag-resort-marbella">0. Il punto di partenza: Hapimag Resort Marbella</h2>
 <p><strong>Calle Camilo José Cela 17, 29602 Marbella</strong> — e questa posizione cambia tutta la logica del viaggio.</p>
@@ -143,6 +165,7 @@
 <div class="tw"><table>
 <thead>
 <tr>
+<th class="stato">Stato</th>
 <th>Compagnia</th>
 <th>Supplemento under 25</th>
 <th>Costo su 8 giorni</th>
@@ -151,42 +174,49 @@
 </thead>
 <tbody>
 <tr>
+<td class="stato"><span class="v-ok">✓</span></td>
 <td><strong>Marbesol</strong></td>
 <td><strong>€4/giorno</strong> (assicurazione aggiuntiva obbligatoria)</td>
 <td><strong>~€32–36</strong></td>
 <td>⭐ Il più economico per under 25. Contratti "senza franchigia": <strong>nessuna cauzione</strong> bloccata, quindi va bene anche con carta di debito. Limita agli under 25 i gruppi A–E (compatta/media, sufficiente per voi). Ufficio anche a Marbella centro</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>MalagaCar.com</strong></td>
 <td>€9/giorno, min €27, <strong>max €135</strong></td>
 <td><strong>€72</strong> (il tetto non entra mai in gioco su 8 giorni)</td>
 <td>Full Pack senza cauzione dichiarato per contanti/debito, ma la loro FAQ pubblica parla solo di "credit card": <strong>contraddizione da verificare al telefono</strong> prima di fidarsene</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Helle Hollis</strong></td>
 <td>Young Driver Insurance (variabile)</td>
 <td>~€100–150</td>
 <td>Accetta dai 19 anni ma su gruppi piccoli; per auto più grandi l'intestatario deve avere 23+</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Europcar</strong></td>
 <td>tariffa giornaliera, <strong>cap ~€175/noleggio</strong></td>
 <td>~€175</td>
 <td></td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Sixt</strong></td>
 <td>supplemento sotto i 23 anni</td>
 <td>variabile</td>
 <td>A 23 anni compiuti potresti evitarlo</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Alamo / Enterprise</strong></td>
 <td><strong>€23/giorno</strong> (21-24 anni)</td>
 <td><strong>€184</strong></td>
 <td>Il più caro</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Avis</strong></td>
 <td>supplemento fino a 25 anni</td>
 <td>variabile</td>
@@ -194,7 +224,7 @@
 </tr>
 </tbody>
 </table></div>
-<p><strong>Preventivo confermato:</strong> Marbesol, 8 giorni, tutto incluso, senza cauzione — <strong>€295</strong>. È il numero su cui è costruita la stima totale più sotto.</p>
+<p><span class="badge badge-ok">✓ Verificato</span> <strong>Preventivo confermato:</strong> Marbesol, 8 giorni, tutto incluso, senza cauzione — <strong>€295</strong>. È il numero su cui è costruita la stima totale più sotto.</p>
 <h3 id="due-trappole-da-evitare">Due trappole da evitare</h3>
 <ol>
 <li><strong>La cauzione — e le carte di debito.</strong> I brand internazionali bloccano €900–1.500 su una <strong>carta di credito intestata al conducente</strong>: a 22 anni, senza carta di credito, è un no secco. La via d'uscita non è cercare chi accetta il debito per la cauzione, ma <strong>azzerarla</strong> comprando la copertura full: Marbesol lo fa di serie ("senza franchigia"), MalagaCar lo dichiara col Full Pack (da confermare). A quel punto va bene anche il debito, con tre condizioni che valgono ovunque: <strong>carta fisica</strong> (mai il numero virtuale dell'app), <strong>intestata al conducente principale</strong> del contratto, e <strong>limiti di spesa alzati</strong> nell'app prima di partire (Revolut e N26 di default bloccano sopra i €500). Una carta <strong>prepagata come Hype non è debito</strong> ed è quasi sempre esclusa a prescindere — non contateci. Chiedete conferma per iscritto via mail prima di partire, non fidatevi della sola parola al telefono.</li>
@@ -204,28 +234,34 @@
 <div class="tw"><table>
 <thead>
 <tr>
+<th class="stato">Stato</th>
 <th>Voce</th>
-<th>Stima</th>
+<th>Importo</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td class="stato"><span class="v-ok">✓</span></td>
 <td><strong>Noleggio Marbesol, tutto incluso, senza cauzione</strong></td>
 <td><strong>€295</strong> (preventivo confermato)</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Carburante (~600-800 km)</td>
 <td>€70–100</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Pedaggi AP-7 (evitabili usando la A-7 gratuita)</td>
 <td>€0–25</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Parcheggio Hapimag (~€6 × 9 giorni)</strong></td>
 <td><strong>€54</strong></td>
 </tr>
 <tr>
+<td class="stato">—</td>
 <td><strong>Totale</strong></td>
 <td><strong>≈ €420–475</strong> → <strong>€105–120 a testa</strong></td>
 </tr>
@@ -236,31 +272,36 @@
 <h2 id="2-le-tre-strategie-possibili">2. Le tre strategie possibili</h2>
 <p>Dato che l'Hapimag è in centro e sul mare, l'auto non serve per stare a Marbella: serve solo per <strong>uscirne</strong>. Da qui tre scenari.</p>
 <h3 id="a-auto-per-tutto-il-soggiorno">A · Auto per tutto il soggiorno ⭐ ora la scelta più semplice</h3>
-<p><strong>€420–475</strong> (preventivo Marbesol confermato) · Massima libertà, zero pianificazione, spesa al supermercato comoda. Con questo prezzo tenerla ferma i giorni di mare non pesa quasi più — è già la formula più economica in assoluto, transfer compreso, perché ritirando all'aeroporto non pagate taxi/bus a parte.</p>
+<p><span class="badge badge-ok">✓ base verificata</span> <strong>€420–475</strong> (preventivo Marbesol confermato, resto stimato — vedi tabella sopra) · Massima libertà, zero pianificazione, spesa al supermercato comoda. Con questo prezzo tenerla ferma i giorni di mare non pesa quasi più — è già la formula più economica in assoluto, transfer compreso, perché ritirando all'aeroporto non pagate taxi/bus a parte.</p>
 <p><strong>Ha senso se</strong> volete libertà di decidere giorno per giorno, cosa che a questo prezzo non ha quasi controindicazioni.</p>
 <h3 id="b-auto-solo-per-3-4-giorni-probabilmente-loptimum">B · Auto solo per 3-4 giorni</h3>
 <p>Arrivate in bus o taxi, vivete Marbella a piedi, e prendete l'auto <strong>solo nel blocco centrale della vacanza</strong> per fare le gite. Con il noleggio pieno sceso a €295, questo scenario ha perso il suo vantaggio: il transfer A/R che aggiunge si mangia gran parte del risparmio su un noleggio più corto.</p>
 <div class="tw"><table>
 <thead>
 <tr>
+<th class="stato">Stato</th>
 <th>Voce</th>
-<th>Stima</th>
+<th>Importo</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Transfer aeroporto A/R (bus o taxi, vedi §3)</td>
 <td>€70–175</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Noleggio Marbesol 4 giorni, tutto incluso</td>
 <td>~€150–190 (stima, non quotata)</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Carburante + parcheggio</td>
 <td>€70–100</td>
 </tr>
 <tr>
+<td class="stato">—</td>
 <td><strong>Totale</strong></td>
 <td><strong>≈ €290–465</strong></td>
 </tr>
@@ -268,7 +309,7 @@
 </table></div>
 <p><strong>Ha senso solo se</strong> preferite non pensare all'auto nei giorni di mare, non per risparmiare — a conti fatti costa quasi quanto lo scenario A. <strong>Da verificare comunque:</strong> il ritiro a Marbella centro non è scontato per tutti gli operatori; chiedi preventivo esplicito per "ritiro a Marbella" prima di scegliere questa strada.</p>
 <h3 id="c-zero-auto">C · Zero auto</h3>
-<p><strong>€250–350</strong> se restate su mare + Marbella + Puerto Banús. Sale a <strong>€1.100+</strong> se aggiungete 3 escursioni organizzate a €50-90 a testa — cioè più dell'auto, con meno libertà.</p>
+<p><span class="badge badge-est">≈ Stima</span> <strong>€250–350</strong> se restate su mare + Marbella + Puerto Banús. Sale a <strong>€1.100+</strong> se aggiungete 3 escursioni organizzate a €50-90 a testa — cioè più dell'auto, con meno libertà.</p>
 <p><strong>Ha senso se</strong> l'obiettivo è soprattutto mare, relax e serate, con al massimo una gita.</p>
 <hr />
 <h2 id="3-muoversi-senza-auto">3. Muoversi senza auto</h2>
@@ -276,6 +317,7 @@
 <div class="tw"><table>
 <thead>
 <tr>
+<th class="stato">Stato</th>
 <th>Mezzo</th>
 <th>Costo reale</th>
 <th>Tempo</th>
@@ -283,11 +325,13 @@
 </thead>
 <tbody>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Taxi / Uber diretto</strong></td>
 <td>€70–82 <strong>+ €5,50 supplemento aeroporto</strong> ≈ <strong>€20 a testa</strong></td>
 <td>45 min, porta a porta</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Bus Avanza diretto</strong> (T3 arrivi)</td>
 <td>€8–9 a testa = €32–36 … <strong>+ taxi dalla stazione all'Hapimag €8–10</strong> ≈ <strong>€42–46 in 4</strong></td>
 <td>60 min + trasbordo</td>
@@ -299,6 +343,7 @@
 <div class="tw"><table>
 <thead>
 <tr>
+<th class="stato">Stato</th>
 <th>Tratta</th>
 <th>Come</th>
 <th>Costo</th>
@@ -306,36 +351,43 @@
 </thead>
 <tbody>
 <tr>
+<td class="stato">—</td>
 <td>Centro storico, Fontanilla, Paseo Marítimo</td>
 <td><strong>a piedi</strong></td>
 <td>€0</td>
 </tr>
 <tr>
+<td class="stato">—</td>
 <td>Puerto Deportivo (barche)</td>
 <td><strong>a piedi, 12 min</strong></td>
 <td>€0</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Puerto Banús</strong></td>
 <td>Bus urbano <strong>Linea A</strong> dal Paseo Marítimo, ogni 20-30 min, ~30 min</td>
 <td><strong>€1,35</strong> (bono 10 corse ~€8)</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Puerto Banús in taxi</td>
 <td></td>
 <td>€15–20</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>San Pedro Alcántara</td>
 <td>Linea A</td>
 <td>€1,35</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Málaga città</td>
 <td>Bus diretto ~1h</td>
 <td>~€7 a testa</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Fuengirola / Estepona</td>
 <td>Bus costiero Avanza</td>
 <td>pochi euro</td>
@@ -476,36 +528,44 @@
 <div class="tw"><table>
 <thead>
 <tr>
+<th class="stato">Stato</th>
 <th>Formula</th>
 <th>Prezzo indicativo</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Senza patente, 2 ore</td>
 <td>da ~€100</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Senza patente, 4 ore</td>
 <td>~€150–195</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Senza patente, giornata (8h)</td>
 <td>~€300</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Carburante (spesso escluso)</strong></td>
 <td><strong>+€30 per 2h, +€60 per 4h</strong></td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Cauzione alla consegna</strong></td>
 <td><strong>€200, di solito in contanti o preautorizzata</strong></td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Escursione catamarano di gruppo con delfini</td>
 <td>da €50 a testa</td>
 </tr>
 <tr>
+<td class="stato"><span class="v-est">≈</span></td>
 <td>Charter privato con skipper, 2h (fino a 8-10 pax)</td>
 <td>€230–390 totali</td>
 </tr>
