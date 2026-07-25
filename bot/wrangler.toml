@@ -9,16 +9,10 @@ compatibility_date = "2026-07-01"
 [observability]
 enabled = true
 
-# Memoria della conversazione. Il bot funziona anche senza (usa solo il
-# messaggio citato), ma per ricordarsi gli scambi precedenti serve una KV:
-#
-#   npx wrangler kv namespace create CHAT_HISTORY
-#
-# Il comando stampa un id: incollalo qui sotto e togli i commenti.
-#
-# [[kv_namespaces]]
-# binding = "CHAT_HISTORY"
-# id = "incolla-qui-l-id-stampato-dal-comando"
+# Memoria della conversazione: ultimi scambi per topic, TTL 7 giorni.
+[[kv_namespaces]]
+binding = "CHAT_HISTORY"
+id = "b7f3a973572642139043c2a46f19ad74"
 
 # Variabili non segrete. I segreti (TELEGRAM_BOT_TOKEN, GEMINI_API_KEY,
 # WEBHOOK_SECRET) NON vanno qui: si impostano come secret del Worker.

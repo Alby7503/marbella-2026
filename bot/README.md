@@ -131,32 +131,17 @@ ALLOWED_CHAT_IDS = "-1001234567890"
 
 Il commit fa ripartire il deploy da solo. Fatto.
 
-### 9 · Memoria della conversazione (opzionale ma consigliato)
+### 9 · Memoria della conversazione
 
-Senza questo passo il bot funziona, ma **riparte da zero a ogni domanda**:
-l'unico contesto che ha è il messaggio a cui stai rispondendo, perché è
-l'unico che Telegram gli consegna. Per dargli memoria vera serve una KV di
-Cloudflare — gratis a questi volumi.
+Già configurata: `bot/wrangler.toml` punta a un namespace KV di Cloudflare
+(gratis a questi volumi) creato apposta per questo bot. Il bot ricorda gli
+ultimi **8 scambi per ogni topic**, che scadono dopo 7 giorni. `/dimentica`
+azzera la memoria di quel topic.
 
-Da terminale, dentro `bot/`:
-
-```bash
-npx wrangler kv namespace create CHAT_HISTORY
-```
-
-Il comando stampa qualcosa come:
-
-```
-[[kv_namespaces]]
-binding = "CHAT_HISTORY"
-id = "a1b2c3d4e5f6..."
-```
-
-Copia quell'`id`, apri `bot/wrangler.toml`, togli i commenti al blocco
-`[[kv_namespaces]]` e incolla l'id. Commit → il deploy riparte da solo.
-
-Da quel momento il bot ricorda gli ultimi **8 scambi per ogni topic**, che
-scadono dopo 7 giorni. `/dimentica` azzera la memoria di quel topic.
+Se in futuro serve un namespace nuovo (es. altro account Cloudflare): da
+terminale, dentro `bot/`, `npx wrangler kv namespace create CHAT_HISTORY`
+stampa un blocco `[[kv_namespaces]]` con un nuovo `id` da incollare al posto
+di quello attuale in `wrangler.toml`. Commit → il deploy riparte da solo.
 
 Se salti questo passo non si rompe niente: il codice controlla se il binding
 c'è e, se manca, lavora come prima.
@@ -173,8 +158,7 @@ Nel gruppo, menzionando il bot:
 
 Oppure rispondendo a un suo messaggio, senza rimenzionarlo.
 
-**Con la memoria attiva** (passo 9) potete continuare il discorso senza
-ripetere il contesto:
+Potete continuare il discorso senza ripetere il contesto:
 
 > — `/chiedi quanto costa il Caminito?`
 > — *Il biglietto è 10-18 euro a testa, più 2,50 di navetta…*
