@@ -45,18 +45,30 @@ export default {
 
     // Rispondiamo subito a Telegram e lavoriamo in background: altrimenti
     // Telegram ritenta la consegna e il bot risponde due volte.
-    ctx.waitUntil(handleUpdate(update, env));
+    ctx.waitUntil(
+      handleUpdate(update, env).catch((err) => {
+        // Rete di sicurezza: senza questo, un'eccezione imprevista in un
+        // punto non coperto da un try/catch specifico sparisce nel nulla
+        // (nessuna riga di log, nessun messaggio all'utente).
+        console.error("handleUpdate ha lanciato un'eccezione non gestita:", err);
+      })
+    );
     return new Response("ok");
   },
 };
 
 async function handleUpdate(update, env) {
   const msg = update.message || update.edited_message;
-  if (!msg || typeof msg.text !== "string") return;
+  if (!msg || typeof msg.text !== "string") {
+    console.log("update ignorato: non è un messaggio di testo", JSON.stringify(update).slice(0, 300));
+    return;
+  }
 
   const chatId = msg.chat.id;
+  console.log(`update ricevuto da chat ${chatId}: "${msg.text.slice(0, 200)}"`);
 
   if (!isAllowedChat(chatId, env)) {
+    console.log(`chat ${chatId} non in ALLOWED_CHAT_IDS ("${env.ALLOWED_CHAT_IDS}") — mando il rifiuto`);
     await tg(env, "sendMessage", {
       chat_id: chatId,
       text:
@@ -67,8 +79,10 @@ async function handleUpdate(update, env) {
   }
 
   const text = stripBotMention(msg.text, env.BOT_USERNAME).trim();
+  console.log(`testo dopo aver tolto la menzione: "${text}"`);
 
   if (/^\/(start|help)\b/i.test(text) || text === "") {
+    console.log("ramo /start /help (o testo vuoto dopo la menzione)");
     await tg(env, "sendMessage", {
       chat_id: chatId,
       reply_to_message_id: msg.message_id,
@@ -85,6 +99,7 @@ async function handleUpdate(update, env) {
   }
 
   if (/^\/chatid\b/i.test(text)) {
+    console.log("ramo /chatid");
     await tg(env, "sendMessage", {
       chat_id: chatId,
       reply_to_message_id: msg.message_id,
@@ -93,6 +108,7 @@ async function handleUpdate(update, env) {
     return;
   }
 
+  console.log("ramo domanda vera: chiamo Gemini");
   await tg(env, "sendChatAction", { chat_id: chatId, action: "typing" });
 
   let answer;
@@ -102,6 +118,7 @@ async function handleUpdate(update, env) {
       quoted: msg.reply_to_message?.text,
       asker: msg.from?.first_name,
     });
+    console.log(`Gemini ha risposto (${answer.length} caratteri)`);
   } catch (err) {
     console.error("askGemini failed:", err);
     answer =
@@ -119,6 +136,7 @@ async function handleUpdate(update, env) {
       link_preview_options: { is_disabled: true },
     });
   }
+  console.log("handleUpdate completato");
 }
 
 /* ------------------------------------------------------------------ Gemini */
@@ -269,6 +287,11 @@ function htmlToText(html) {
 /* ----------------------------------------------------------------- Telegram */
 
 async function tg(env, method, payload) {
+  if (!env.TELEGRAM_BOT_TOKEN) {
+    console.error(`telegram ${method}: TELEGRAM_BOT_TOKEN mancante nell'ambiente`);
+    return new Response(null, { status: 401 });
+  }
+
   const res = await fetch(
     `${TELEGRAM_API}/bot${env.TELEGRAM_BOT_TOKEN}/${method}`,
     {
@@ -279,6 +302,8 @@ async function tg(env, method, payload) {
   );
   if (!res.ok) {
     console.error(`telegram ${method} ${res.status}: ${await res.text()}`);
+  } else {
+    console.log(`telegram ${method}: ok (chat ${payload.chat_id ?? "?"})`);
   }
   return res;
 }
