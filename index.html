@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Marbella 30/07 &ndash; 07/08/2026</title>
-<meta name="description" content="Piano viaggio Marbella: noleggio auto under 25 ad AGP, alternative Uber, gite in giornata e barca senza patente.">
+<meta name="description" content="Piano viaggio Marbella per 4 under 25: noleggio auto ad AGP, gite in giornata, barca senza patente, serate low cost e configuratore di budget.">
 <meta property="og:title" content="Marbella 30/07 - 07/08/2026">
-<meta property="og:description" content="Noleggio auto under 25 ad AGP, alternative Uber, gite in giornata e barca senza patente.">
+<meta property="og:description" content="Noleggio auto ad AGP, gite in giornata, barca senza patente, serate low cost e configuratore di budget.">
 <meta property="og:type" content="article">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#127958;</text></svg>">
 <style>
@@ -93,9 +93,81 @@
     font:14px/1.6 ui-sans-serif,system-ui,sans-serif; color:var(--muted);
   }
   h2#fonti + ul, h2#fonti ~ ul{font-size:14.5px}
+
+  /* ---- Configuratore budget ---- */
+  .calc{
+    font:15px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+    border:1px solid var(--line); border-radius:12px; background:var(--card);
+    padding:18px 20px; margin:0 0 26px;
+  }
+  .calc fieldset{border:none; margin:0 0 6px; padding:0; min-width:0}
+  .calc legend{
+    font:700 12px/1 ui-sans-serif,system-ui,sans-serif; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--accent); padding:0; margin:18px 0 6px;
+  }
+  .calc fieldset:first-of-type legend{margin-top:4px}
+  .opt{
+    display:grid; grid-template-columns:22px 1fr auto; gap:2px 10px;
+    align-items:baseline; padding:9px 0; border-bottom:1px dashed var(--line);
+  }
+  .opt:last-child{border-bottom:none}
+  .opt > input{margin:0; justify-self:center; align-self:center; width:17px; height:17px; accent-color:var(--accent)}
+  .opt > input[type=number]{width:60px; height:auto; padding:4px 6px; font:inherit;
+    border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--ink); justify-self:start}
+  .opt > label{cursor:pointer; min-width:0}
+  .opt b{display:block; font-weight:600}
+  .opt em{display:block; font-style:normal; font-size:13px; color:var(--muted); margin-top:2px}
+  .opt .price{
+    font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap;
+    text-align:right; font-size:14px; color:var(--sea);
+  }
+  .opt .price span{display:block; font-weight:400; font-size:11.5px; color:var(--muted)}
+  .opt:has(> input:checked){background:var(--accent-soft); border-radius:6px;
+    box-shadow:0 0 0 6px var(--accent-soft)}
+  .calc-bar{
+    display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; justify-content:space-between;
+    padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .calc-bar label{font-weight:600; display:flex; align-items:center; gap:8px}
+  .calc-bar input{width:64px; padding:5px 8px; font:inherit; border:1px solid var(--line);
+    border-radius:6px; background:var(--bg); color:var(--ink)}
+  .calc-total{
+    position:sticky; bottom:0; margin:18px -20px -18px; padding:16px 20px;
+    background:var(--accent-soft); border-top:1px solid var(--line);
+    border-radius:0 0 12px 12px; display:flex; flex-wrap:wrap; gap:6px 26px; align-items:baseline;
+  }
+  .calc-total .tot{font-size:13px; color:var(--muted); font-weight:600;
+    letter-spacing:.06em; text-transform:uppercase}
+  .calc-total .num{font-size:23px; font-weight:700; color:var(--accent);
+    font-variant-numeric:tabular-nums; display:block; line-height:1.2}
+  .calc-actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:16px}
+  .calc-actions button{
+    font:600 14px/1 ui-sans-serif,system-ui,sans-serif; cursor:pointer;
+    padding:10px 14px; border-radius:8px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink);
+  }
+  .calc-actions button:hover{border-color:var(--accent); color:var(--accent)}
+  .calc-actions button.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+  .calc-actions button.primary:hover{opacity:.88; color:#fff}
+  .calc-out{
+    width:100%; margin-top:14px; padding:12px; border-radius:8px; display:none;
+    font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+    border:1px solid var(--line); background:var(--bg); color:var(--ink); resize:vertical;
+  }
+  .calc-out.show{display:block}
+  .calc-note{font-size:13.5px; color:var(--muted); margin:10px 0 0}
+  .calc-flash{font-size:13px; color:var(--sea); font-weight:600; margin-left:4px}
+  @media (max-width:520px){
+    .opt{grid-template-columns:22px 1fr; }
+    .opt .price{grid-column:2; text-align:left; margin-top:4px}
+    .opt .price span{display:inline}
+  }
   @media print{
     body{background:#fff; color:#000; font-size:11pt}
     .tw{break-inside:avoid} h2{break-after:avoid}
+    .calc-actions, .calc-out{display:none}
+    .calc-total{position:static}
+    .opt:has(> input:not(:checked)){display:none}
   }
 </style>
 </head>
@@ -153,7 +225,7 @@
 <p><strong>Conseguenze pratiche:</strong></p>
 <ul>
 <li><strong>Mare, centro storico, Paseo Marítimo, ristoranti, vita serale: tutto a piedi.</strong> Per la vita quotidiana non vi serve nessun mezzo.</li>
-<li><strong>Parcheggio in loco a ~€6/giorno.</strong> Cambia radicalmente il conto dell'auto: non €10-20 al giorno di parcheggi pubblici, ma ~€54 per l'intero soggiorno. ⚠️ Non è prenotabile e i posti sono limitati: in agosto può essere pieno. Chiedi conferma via mail prima di partire.</li>
+<li><strong>Parcheggio in loco a ~€6/giorno.</strong> Cambia radicalmente il conto dell'auto: non €10-20 al giorno di parcheggi pubblici, ma <strong>~€48 per le 8 notti</strong> del soggiorno. ⚠️ Non è prenotabile e i posti sono limitati: in agosto può essere pieno. Chiedi conferma via mail prima di partire. <strong>Piano B, da mettere in conto fin da ora:</strong> i parcheggi pubblici del centro stanno sui €15-20/giorno, cioè <strong>+€72–112</strong> rispetto ai €48 preventivati.</li>
 <li><strong>Appartamenti con cucina.</strong> Utile per la spesa: c'è un Mercadona a pochi minuti, ma con l'auto la spesa grossa del primo giorno si fa in un attimo.</li>
 <li><strong>Barca a piedi da casa.</strong> Il Puerto Deportivo è a 12 minuti: potete noleggiare lì invece che a Puerto Banús, senza spostamenti.</li>
 <li><strong>L'auto serve solo per uscire da Marbella.</strong> Nei giorni di mare resta in garage a costare.</li>
@@ -177,8 +249,8 @@
 <td class="stato"><span class="v-ok">✓</span></td>
 <td><strong>Marbesol</strong></td>
 <td><strong>€4/giorno</strong> (assicurazione aggiuntiva obbligatoria)</td>
-<td><strong>~€32–36</strong></td>
-<td>⭐ Il più economico per under 25. Contratti "senza franchigia": <strong>nessuna cauzione</strong> bloccata, quindi va bene anche con carta di debito. Limita agli under 25 i gruppi A–E (compatta/media, sufficiente per voi). Ufficio anche a Marbella centro</td>
+<td><strong>€32</strong> (€4 × 8 gg)</td>
+<td>⭐ Il più economico per under 25. Contratti "senza franchigia": <strong>nessuna cauzione</strong> bloccata, quindi va bene anche con carta di debito. Limita agli under 25 i gruppi A–E. ⚠️ <strong>Non fidarti della lettera del gruppo</strong>: fatti confermare per iscritto <strong>modello esatto e litri di baule</strong> (vedi trappola n°2). Ufficio anche a Marbella centro</td>
 </tr>
 <tr>
 <td class="stato"><span class="v-est">≈</span></td>
@@ -228,9 +300,10 @@
 <h3 id="due-trappole-da-evitare">Due trappole da evitare</h3>
 <ol>
 <li><strong>La cauzione — e le carte di debito.</strong> I brand internazionali bloccano €900–1.500 su una <strong>carta di credito intestata al conducente</strong>: a 22 anni, senza carta di credito, è un no secco. La via d'uscita non è cercare chi accetta il debito per la cauzione, ma <strong>azzerarla</strong> comprando la copertura full: Marbesol lo fa di serie ("senza franchigia"), MalagaCar lo dichiara col Full Pack (da confermare). A quel punto va bene anche il debito, con tre condizioni che valgono ovunque: <strong>carta fisica</strong> (mai il numero virtuale dell'app), <strong>intestata al conducente principale</strong> del contratto, e <strong>limiti di spesa alzati</strong> nell'app prima di partire (Revolut e N26 di default bloccano sopra i €500). Una carta <strong>prepagata come Hype non è debito</strong> ed è quasi sempre esclusa a prescindere — non contateci. Chiedete conferma per iscritto via mail prima di partire, non fidatevi della sola parola al telefono.</li>
-<li><strong>Il gruppo auto.</strong> In 4 con bagagli da 9 giorni serve almeno una compatta grande o una station wagon. Alcuni operatori limitano gli under 23 ai gruppi A/B (Panda-size). <strong>Verifica il gruppo prima di pagare.</strong></li>
+<li><strong>Il gruppo auto.</strong> In 4 con bagagli da 9 giorni serve almeno una compatta grande o una station wagon: <strong>4 valigie grandi non entrano nel baule di una Ibiza o di una Corsa</strong> (~290 litri). Alcuni operatori limitano gli under 23 ai gruppi A/B (Panda-size). <strong>Fatti confermare per iscritto il modello e la capienza del baule, non la lettera del gruppo</strong> — è l'unico modo per sapere se ci state davvero.</li>
 </ol>
-<h3 id="stima-costo-auto-per-tutto-il-soggiorno-8-9-giorni-compattasw">Stima costo auto per tutto il soggiorno (8-9 giorni, compatta/SW)</h3>
+<h3 id="stima-costo-auto-per-tutto-il-soggiorno-8-9-giorni-compattasw">Stima costo auto per tutto il soggiorno (8 giorni di noleggio, 30/07 → 07/08)</h3>
+<p>Il soggiorno è di <strong>9 giorni solari e 8 notti</strong>: il noleggio si conta in 8 giorni, il parcheggio in 8 notti. Tutte le cifre sotto usano questo criterio.</p>
 <div class="tw"><table>
 <thead>
 <tr>
@@ -257,13 +330,13 @@
 </tr>
 <tr>
 <td class="stato"><span class="v-est">≈</span></td>
-<td><strong>Parcheggio Hapimag (~€6 × 9 giorni)</strong></td>
-<td><strong>€54</strong></td>
+<td><strong>Parcheggio Hapimag (~€6 × 8 notti)</strong></td>
+<td><strong>€48</strong></td>
 </tr>
 <tr>
 <td class="stato">—</td>
 <td><strong>Totale</strong></td>
-<td><strong>≈ €420–475</strong> → <strong>€105–120 a testa</strong></td>
+<td><strong>≈ €413–468</strong> → <strong>€103–117 a testa</strong></td>
 </tr>
 </tbody>
 </table></div>
@@ -272,7 +345,7 @@
 <h2 id="2-le-tre-strategie-possibili">2. Le tre strategie possibili</h2>
 <p>Dato che l'Hapimag è in centro e sul mare, l'auto non serve per stare a Marbella: serve solo per <strong>uscirne</strong>. Da qui tre scenari.</p>
 <h3 id="a-auto-per-tutto-il-soggiorno">A · Auto per tutto il soggiorno ⭐ ora la scelta più semplice</h3>
-<p><span class="badge badge-ok">✓ base verificata</span> <strong>€420–475</strong> (preventivo Marbesol confermato, resto stimato — vedi tabella sopra) · Massima libertà, zero pianificazione, spesa al supermercato comoda. Con questo prezzo tenerla ferma i giorni di mare non pesa quasi più — è già la formula più economica in assoluto, transfer compreso, perché ritirando all'aeroporto non pagate taxi/bus a parte.</p>
+<p><span class="badge badge-ok">✓ base verificata</span> <strong>€413–468</strong> (preventivo Marbesol confermato, resto stimato — vedi tabella sopra) · Massima libertà, zero pianificazione, spesa al supermercato comoda. Con questo prezzo tenerla ferma i giorni di mare non pesa quasi più: è <strong>la formula più economica tra quelle che vi fanno uscire da Marbella</strong>, transfer compreso, perché ritirando all'aeroporto non pagate taxi/bus a parte. <em>In assoluto</em> il più economico resta lo scenario C (€250–350), ma solo rinunciando alle gite.</p>
 <p><strong>Ha senso se</strong> volete libertà di decidere giorno per giorno, cosa che a questo prezzo non ha quasi controindicazioni.</p>
 <h3 id="b-auto-solo-per-3-4-giorni-probabilmente-loptimum">B · Auto solo per 3-4 giorni</h3>
 <p>Arrivate in bus o taxi, vivete Marbella a piedi, e prendete l'auto <strong>solo nel blocco centrale della vacanza</strong> per fare le gite. Con il noleggio pieno sceso a €295, questo scenario ha perso il suo vantaggio: il transfer A/R che aggiunge si mangia gran parte del risparmio su un noleggio più corto.</p>
@@ -309,7 +382,7 @@
 </table></div>
 <p><strong>Ha senso solo se</strong> preferite non pensare all'auto nei giorni di mare, non per risparmiare — a conti fatti costa quasi quanto lo scenario A. <strong>Da verificare comunque:</strong> il ritiro a Marbella centro non è scontato per tutti gli operatori; chiedi preventivo esplicito per "ritiro a Marbella" prima di scegliere questa strada.</p>
 <h3 id="c-zero-auto">C · Zero auto</h3>
-<p><span class="badge badge-est">≈ Stima</span> <strong>€250–350</strong> se restate su mare + Marbella + Puerto Banús. Sale a <strong>€1.100+</strong> se aggiungete 3 escursioni organizzate a €50-90 a testa — cioè più dell'auto, con meno libertà.</p>
+<p><span class="badge badge-est">≈ Stima</span> <strong>€250–350</strong> se restate su mare + Marbella + Puerto Banús. Sale a <strong>€850–1.430</strong> se aggiungete 3 escursioni organizzate a €50-90 a testa (€250–350 di base + 3 × €50–90 × 4 persone) — cioè, già dalla fascia bassa, il doppio dell'auto con meno libertà.</p>
 <p><strong>Ha senso se</strong> l'obiettivo è soprattutto mare, relax e serate, con al massimo una gita.</p>
 <hr />
 <h2 id="3-muoversi-senza-auto">3. Muoversi senza auto</h2>
@@ -365,7 +438,7 @@
 <tr>
 <td class="stato"><span class="v-est">≈</span></td>
 <td><strong>Puerto Banús</strong></td>
-<td>Bus urbano <strong>Linea A</strong> dal Paseo Marítimo, ogni 20-30 min, ~30 min</td>
+<td>Bus urbano <strong>Linea A</strong> dal Paseo Marítimo, ogni 20-30 min, ~30 min. ⚠️ <strong>Solo diurno: non copre il rientro notturno</strong></td>
 <td><strong>€1,35</strong> (bono 10 corse ~€8)</td>
 </tr>
 <tr>
@@ -396,7 +469,8 @@
 </table></div>
 <h3 id="il-problema-taxivtc-in-estate">⚠️ Il problema taxi/VTC in estate</h3>
 <p>A luglio 2026 la stampa locale riporta che a Marbella <strong>oltre due terzi delle richieste di taxi e VTC restano senza risposta</strong> in alta stagione, con tariffe dinamiche molto alte. Uber e Cabify operano, Bolt in modo limitato.</p>
-<p>La buona notizia è che dall'Hapimag questo pesa poco: il grosso di quello che farete è a piedi o sulla Linea A. Il problema resta serio <strong>solo se pensate di usare Uber per le gite</strong> — aspettare un passaggio a Ronda alle 22:00 non è un piano.</p>
+<p><strong>Di giorno</strong> dall'Hapimag questo pesa poco: il grosso di quello che farete è a piedi o sulla Linea A.</p>
+<p><strong>Di notte è tutt'altra storia, ed è il caso che vi riguarda davvero.</strong> La Linea A non ha servizio notturno: il rientro da Puerto Banús alle 3 dipende interamente da taxi e VTC, cioè proprio dal servizio che due volte su tre non risponde. È la ragione numero uno per <strong>tenere il grosso delle serate a Marbella centro e al Puerto Deportivo, dove si torna a piedi</strong>, e andare a Banús poche volte con il ritorno concordato <em>prima</em> di uscire. Vale anche per le gite: aspettare un passaggio a Ronda alle 22:00 non è un piano.</p>
 <hr />
 <h2 id="4-litinerario-che-giustifica-lauto">4. L'itinerario che giustifica l'auto</h2>
 <p>Tutti i tempi partono da Marbella centro. Siete orientati soprattutto al mare, quindi teniamo le uscite dentro un budget stretto: <strong>massimo 1-2 giornate intere e 1-2 mezze giornate</strong> (le spiagge raggiungibili in auto non contano in questo conteggio — restano dentro un giorno di mare, non sono uscite a sé).</p>
@@ -440,6 +514,12 @@
 <td>Mezza giornata</td>
 <td>30–50 min</td>
 <td>Ottime per il tardo pomeriggio, si abbinano a un giorno di mare senza portarvelo via</td>
+</tr>
+<tr>
+<td><strong>Málaga città</strong></td>
+<td>Giornata intera</td>
+<td>1h in bus (~€7 a testa a tratta)</td>
+<td>Centro storico, Alcazaba, Picasso, tapas. <strong>È l'unica opzione che non richiede l'auto</strong> — ma resta una giornata intera, quindi va scambiata con un must o con un giorno di mare, non aggiunta</td>
 </tr>
 <tr>
 <td><strong>Nerja + Frigiliana</strong></td>
@@ -486,7 +566,7 @@
 <tbody>
 <tr>
 <td>Gio 30/07</td>
-<td>Arrivo, taxi all'Hapimag, spesa al Mercadona, sera in centro storico a piedi</td>
+<td>Arrivo, <strong>ritiro auto ad AGP</strong> (navetta Marbesol), spesa al Mercadona, sera in centro storico a piedi</td>
 </tr>
 <tr>
 <td>Ven 31/07</td>
@@ -494,7 +574,7 @@
 </tr>
 <tr>
 <td>Sab 01/08</td>
-<td><strong>Giro in barca dal Puerto Deportivo</strong> (mattina, mare più piatto). Ritiro auto in giornata</td>
+<td><strong>Giro in barca dal Puerto Deportivo</strong> (mattina, mare più piatto). Ci si va a piedi: l'auto resta in garage</td>
 </tr>
 <tr>
 <td>Dom 02/08</td>
@@ -502,11 +582,11 @@
 </tr>
 <tr>
 <td>Lun 03/08</td>
-<td><strong>Must: Caminito del Rey</strong> (slot mattutino) — eventuale mezza giornata opzionale al rientro (es. Mijas Pueblo)</td>
+<td><strong>Must: Caminito del Rey</strong> (slot mattutino). <strong>Nient'altro in programma</strong>: sono 1h30 di auto, 7,7 km di camminata senza ombra e 1h30 di ritorno — con l'aggiunta di una mezza giornata diventa una giornata da 12 ore a 40°C</td>
 </tr>
 <tr>
 <td>Mar 04/08</td>
-<td>Giorno di mare libero, o seconda mezza giornata opzionale se ne scegliete due</td>
+<td>Giorno di mare libero, oppure <strong>mezza giornata opzionale nel tardo pomeriggio</strong> (Mijas Pueblo, Ojén, Istán o Casares) — è questo il giorno giusto per incastrarla</td>
 </tr>
 <tr>
 <td>Mer 05/08</td>
@@ -514,11 +594,11 @@
 </tr>
 <tr>
 <td>Gio 06/08</td>
-<td>Málaga città in bus, oppure giornata di mare e ultimo giro in centro</td>
+<td>Giornata di mare e ultimo giro in centro. <strong>Málaga città è possibile ma è una giornata intera</strong> (vedi Opzionali): la aggiungete solo rinunciando a un must o a questo giorno di mare, non in più</td>
 </tr>
 <tr>
 <td>Ven 07/08</td>
-<td>Spiaggia veloce, riconsegna auto, taxi in aeroporto, volo</td>
+<td>Spiaggia veloce, <strong>riconsegna auto ad AGP</strong> — con la navetta Marbesol mettete in conto <strong>30-40 min in più</strong> prima del check-in. Nessun taxi: ci andate con l'auto che state riconsegnando</td>
 </tr>
 </tbody>
 </table></div>
@@ -546,17 +626,17 @@
 </thead>
 <tbody>
 <tr>
-<td class="stato"><span class="v-est">≈</span></td>
+<td class="stato"><span class="v-ok">✓</span></td>
 <td>Senza patente, 2 ore</td>
 <td>da ~€100</td>
 </tr>
 <tr>
-<td class="stato"><span class="v-est">≈</span></td>
+<td class="stato"><span class="v-ok">✓</span></td>
 <td>Senza patente, 4 ore</td>
 <td>~€150–195</td>
 </tr>
 <tr>
-<td class="stato"><span class="v-est">≈</span></td>
+<td class="stato"><span class="v-ok">✓</span></td>
 <td>Senza patente, giornata (8h)</td>
 <td>~€300</td>
 </tr>
@@ -606,6 +686,236 @@
 <li>Verificare <strong>per iscritto</strong> che il noleggio copra Gibilterra, se la inserite</li>
 </ol>
 <hr />
+<h2 id="7-configuratore-budget">7. Configuratore budget</h2>
+<p>Spuntate quello che volete fare: il totale si ricalcola da solo. Le cifre sono quelle delle tabelle qui sopra, <strong>scomposte voce per voce</strong> — la benzina e i parcheggi non sono più un forfait, ma seguono le gite che scegliete davvero (~€0,09/km su una compatta).</p>
+<p>Quando avete finito, <strong>«Copia link»</strong> genera un indirizzo che contiene la vostra configurazione: mandatelo agli altri e si apre già compilata, così ognuno può giocarci e rimandarvi la sua. <strong>«Copia lista»</strong> e <strong>«Scarica .txt»</strong> tirano fuori lo stesso preventivo in testo, pronto da incollare in chat.</p>
+<div class="calc" id="calc">
+
+  <div class="calc-bar">
+    <label for="calc-pax">Persone <input type="number" id="calc-pax" min="1" max="12" step="1" value="4"></label>
+    <span class="calc-flash" id="calc-flash"></span>
+  </div>
+
+  <fieldset>
+    <legend>Trasporti — scegliete uno scenario</legend>
+
+    <div class="opt">
+      <input type="radio" name="tr" id="o-tr-auto" data-gmin="343" data-gmax="343" checked>
+      <label for="o-tr-auto"><b>Auto per tutto il soggiorno</b>
+      <em>Marbesol 8 giorni tutto incluso €295 + parcheggio Hapimag €48. Benzina e parcheggi si sommano gita per gita qui sotto.</em></label>
+      <span class="price">€343<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="radio" name="tr" id="o-tr-auto4" data-gmin="290" data-gmax="465">
+      <label for="o-tr-auto4"><b>Auto solo 4 giorni + transfer A/R</b>
+      <em>Scenario B. Include già benzina e parcheggi: se scegliete questo, le gite qui sotto contano solo biglietti e pedaggi.</em></label>
+      <span class="price">€290–465<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="radio" name="tr" id="o-tr-noauto" data-gmin="175" data-gmax="250">
+      <label for="o-tr-noauto"><b>Zero auto</b>
+      <em>Transfer A/R (taxi €151–175, o bus €84–92) + bono bus urbani per Banús e San Pedro. Con questo scenario restano fattibili solo Málaga e Granada in tour.</em></label>
+      <span class="price">€175–250<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-tr-parkpub" data-gmin="72" data-gmax="112">
+      <label for="o-tr-parkpub"><b>⚠️ Parcheggio Hapimag pieno → parcheggio pubblico</b>
+      <em>Non è prenotabile e ad agosto può non esserci posto. Questo è il sovrapprezzo (€15–20/giorno invece di €6) rispetto ai €48 già contati sopra.</em></label>
+      <span class="price">+€72–112<span>gruppo</span></span>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Gite — benzina + parcheggi + biglietti</legend>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-caminito" data-gmin="17" data-gmax="20" data-pmin="12.5" data-pmax="20.5" checked>
+      <label for="o-g-caminito"><b>Caminito del Rey</b> <em>Must · giornata intera · 190 km A/R · biglietto €10–18 + navetta €2,50 a testa</em></label>
+      <span class="price">€17–20 <span>gruppo</span> + €12,50–20,50 <span>a testa</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-ronda" data-gmin="21" data-gmax="26" checked>
+      <label for="o-g-ronda"><b>Ronda</b> <em>Must · giornata intera · 120 km A/R · parcheggio €10–15</em></label>
+      <span class="price">€21–26<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-setenil" data-gmin="6" data-gmax="8" checked>
+      <label for="o-g-setenil"><b>Setenil de las Bodegas</b> <em>aggiunta a Ronda · +70 km · ad agosto nel pomeriggio è un forno</em></label>
+      <span class="price">+€6–8<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-mijas" data-gmin="10" data-gmax="13">
+      <label for="o-g-mijas"><b>Mijas Pueblo / Ojén / Istán / Casares</b> <em>mezza giornata · 30–60 km A/R · Ojén è la più vicina (15 min)</em></label>
+      <span class="price">€10–13<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-malaga" data-pmin="14" data-pmax="14">
+      <label for="o-g-malaga"><b>Málaga città in bus</b> <em>giornata intera · ~€7 a tratta · non serve l'auto, ma va scambiata con un must</em></label>
+      <span class="price">€14<span>a testa</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-nerja" data-gmin="35" data-gmax="40">
+      <label for="o-g-nerja"><b>Nerja + Frigiliana</b> <em>giornata intera · 220 km A/R · ~4h di auto in giornata ad agosto</em></label>
+      <span class="price">€35–40<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-gibilterra" data-gmin="29" data-gmax="39">
+      <label for="o-g-gibilterra"><b>Gibilterra</b> <em>giornata intera · 150 km A/R + parcheggio La Línea · serve CI/passaporto e conferma scritta che il noleggio la copre</em></label>
+      <span class="price">€29–39<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-tarifa" data-gmin="29" data-gmax="34">
+      <label for="o-g-tarifa"><b>Tarifa + Playa de Bolonia</b> <em>giornata intera · 210 km A/R</em></label>
+      <span class="price">€29–34<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-granada" data-pmin="90" data-pmax="130">
+      <label for="o-g-granada"><b>Granada / Alhambra — tour con allotment</b> <em>giornata lunga · i biglietti nominativi si esauriscono con 4–8 settimane di anticipo, a ridosso restano solo i tour</em></label>
+      <span class="price">€90–130<span>a testa</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-cabopino" data-gmin="10" data-gmax="15" checked>
+      <label for="o-g-cabopino"><b>Spiaggia di Cabopino / dune di Artola</b> <em>50 km A/R · dentro un giorno di mare, non è una gita a sé</em></label>
+      <span class="price">€10–15<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-g-locali" data-gmin="30" data-gmax="40" checked>
+      <label for="o-g-locali"><b>Spostamenti locali e spesa in auto</b> <em>benzina per il traffico quotidiano dentro Marbella per tutta la settimana</em></label>
+      <span class="price">€30–40<span>gruppo</span></span>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Barca — scegliete una formula</legend>
+
+    <div class="opt">
+      <input type="radio" name="ba" id="o-ba-no">
+      <label for="o-ba-no"><b>Niente barca</b> <em>il Puerto Deportivo è comunque a 12 min a piedi, si può decidere sul posto</em></label>
+      <span class="price">€0</span>
+    </div>
+
+    <div class="opt">
+      <input type="radio" name="ba" id="o-ba-2h" data-gmin="130" data-gmax="160">
+      <label for="o-ba-2h"><b>Senza patente, 2 ore</b> <em>~€100–130 + ~€30 di carburante · max 2 miglia dal porto</em></label>
+      <span class="price">€130–160<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="radio" name="ba" id="o-ba-4h" data-gmin="210" data-gmax="255" checked>
+      <label for="o-ba-4h"><b>Senza patente, 4 ore</b> <em>~€150–195 + ~€60 di carburante · uscite la mattina, il levante si alza nel pomeriggio · <strong>+€200 di cauzione in contanti</strong>, da recuperare</em></label>
+      <span class="price">€210–255<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="radio" name="ba" id="o-ba-day" data-gmin="400" data-gmax="400">
+      <label for="o-ba-day"><b>Senza patente, giornata (8h)</b> <em>~€300 + ~€100 di carburante</em></label>
+      <span class="price">€400<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="radio" name="ba" id="o-ba-charter" data-gmin="230" data-gmax="390">
+      <label for="o-ba-charter"><b>Charter privato con skipper, 2h</b> <em>niente cauzione, niente responsabilità, nessuno di voi resta sobrio — e arrivate a calette vere</em></label>
+      <span class="price">€230–390<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="radio" name="ba" id="o-ba-cata" data-pmin="50" data-pmax="60">
+      <label for="o-ba-cata"><b>Escursione catamarano di gruppo</b> <em>con avvistamento delfini · l'opzione più economica a testa</em></label>
+      <span class="price">€50–60<span>a testa</span></span>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Mangiare</legend>
+
+    <div class="opt">
+      <input type="checkbox" id="o-f-spesa" data-gmin="200" data-gmax="280" checked>
+      <label for="o-f-spesa"><b>Spesa al Mercadona per 9 giorni</b> <em>colazioni + la maggior parte delle cene in appartamento — è la voce che tiene giù tutto il resto</em></label>
+      <span class="price">€200–280<span>gruppo</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="number" id="o-f-fuori" min="0" max="20" step="1" value="8" data-pmin="14" data-pmax="25">
+      <label for="o-f-fuori"><b>Pasti fuori, a testa</b> <em>menu del día €12–15 a pranzo, chiringuito con espeto de sardinas €3–5, cena normale €25–35</em></label>
+      <span class="price">€14–25<span>a testa, ciascuno</span></span>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Serate</legend>
+
+    <div class="opt">
+      <input type="checkbox" id="o-s-predrink" data-pmin="25" data-pmax="40" checked>
+      <label for="o-s-predrink"><b>Pre-drink in appartamento</b> <em>birra €0,50–0,80 a lattina, superalcolico €8–12 la bottiglia al Mercadona. ⚠️ In strada è botellón e a Marbella si becca la multa (€100–300): si beve in casa o in terrazza.</em></label>
+      <span class="price">€25–40<span>a testa</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="number" id="o-s-marbella" min="0" max="12" step="1" value="5" data-pmin="15" data-pmax="25">
+      <label for="o-s-marbella"><b>Sere in centro Marbella / Puerto Deportivo</b> <em>birra €2,50–4, si torna a piedi in 10–12 min. È la vostra base naturale, non un ripiego.</em></label>
+      <span class="price">€15–25<span>a testa, a sera</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="number" id="o-s-banus" min="0" max="12" step="1" value="1" data-pmin="45" data-pmax="80" data-gmin="20" data-gmax="30">
+      <label for="o-s-banus"><b>Sere a Puerto Banús</b> <em>seconda linea dietro il porto (metà prezzo della prima) + guest list dei promoter, ingresso gratis prima dell'1:00–1:30. <strong>Niente tavoli.</strong> Include €20–30 di taxi per il ritorno: la Linea A di notte non c'è.</em></label>
+      <span class="price">€45–80 <span>a testa</span> + €20–30 <span>gruppo, a sera</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-s-starlite" data-pmin="45" data-pmax="120">
+      <label for="o-s-starlite"><b>Starlite Occident, 1 concerto</b> <em>Cantera de Nagüeles, 10 min da casa · dal 19/06 al 29/08/2026, date confermate l'1, 4, 5 e 6 agosto · apertura 20:00, palco 22:00 · scegliete la data più economica, non l'artista più famoso</em></label>
+      <span class="price">€45–120<span>a testa</span></span>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Mare e varie</legend>
+
+    <div class="opt">
+      <input type="checkbox" id="o-m-lettini" data-pmin="20" data-pmax="35">
+      <label for="o-m-lettini"><b>Lettini in spiaggia</b> <em>€5–8 al giorno in spiaggia normale. La Fontanilla è sotto casa e l'ombrellone ve lo portate.</em></label>
+      <span class="price">€20–35<span>a testa</span></span>
+    </div>
+
+    <div class="opt">
+      <input type="checkbox" id="o-x-imprevisti" data-pct="10" checked>
+      <label for="o-x-imprevisti"><b>Margine imprevisti (10%)</b> <em>farmacia, un taxi in più, la cauzione che tarda a tornare, il giro di birre che offrite voi</em></label>
+      <span class="price">+10%</span>
+    </div>
+  </fieldset>
+
+  <div class="calc-total">
+    <div><span class="tot">Totale gruppo</span><span class="num" id="calc-group">—</span></div>
+    <div><span class="tot">A testa</span><span class="num" id="calc-each">—</span></div>
+  </div>
+
+  <div class="calc-actions">
+    <button type="button" class="primary" id="calc-copy">📋 Copia lista</button>
+    <button type="button" id="calc-link">🔗 Copia link</button>
+    <button type="button" id="calc-dl">⬇️ Scarica .txt</button>
+    <button type="button" id="calc-reset">↺ Reset</button>
+  </div>
+  <textarea class="calc-out" id="calc-out" rows="14" readonly></textarea>
+  <p class="calc-note">Il volo non è incluso: dipende da dove partite e da quando l'avete preso. Tutto il resto sì.</p>
+</div>
+<noscript>
+<p><strong>Il configuratore ha bisogno di JavaScript.</strong> I prezzi di ogni voce sono comunque scritti qui sopra riga per riga, quindi il conto si può fare a mano.</p>
+</noscript>
+<hr />
 <h2 id="fonti">Fonti</h2>
 <ul>
 <li><a href="https://www.tripadvisor.com/Hotel_Review-g187439-d3357875-Reviews-Hapimag_Resort_Marbella-Marbella_Costa_del_Sol_Province_of_Malaga_Andalucia.html">Hapimag Resort Marbella – Tripadvisor</a></li>
@@ -635,6 +945,230 @@
   Documento di pianificazione. Prezzi indicativi, da verificare al momento della prenotazione.
 </footer>
 </div>
+<script>
+(function(){
+  var root = document.getElementById('calc');
+  if(!root) return;
+
+  var paxEl   = document.getElementById('calc-pax');
+  var outGrp  = document.getElementById('calc-group');
+  var outEach = document.getElementById('calc-each');
+  var outBox  = document.getElementById('calc-out');
+  var flash   = document.getElementById('calc-flash');
+  var opts    = Array.prototype.slice.call(root.querySelectorAll('input[id^="o-"]'));
+  var sets    = Array.prototype.slice.call(root.querySelectorAll('fieldset'));
+
+  /* prezzi unitari originali, per poterli rimettere quando una voce viene tolta */
+  opts.forEach(function(el){
+    var p = priceOf(el);
+    if(p) p.setAttribute('data-orig', p.innerHTML);
+  });
+  var DEFAULTS = snapshot();
+
+  function priceOf(el){
+    var row = el.closest('.opt');
+    return row ? row.querySelector('.price') : null;
+  }
+  function labelOf(el){
+    var l = root.querySelector('label[for="' + el.id + '"] b');
+    return l ? l.textContent.trim() : el.id;
+  }
+  function euro(n){
+    return '€' + Math.round(n).toLocaleString('it-IT');
+  }
+  function span(a, b){
+    if(Math.round(a) === Math.round(b)) return euro(a);
+    return euro(a) + '–' + Math.round(b).toLocaleString('it-IT');
+  }
+  function pax(){
+    var n = parseInt(paxEl.value, 10);
+    if(isNaN(n) || n < 1) n = 1;
+    return Math.min(n, 12);
+  }
+  function qty(el){
+    if(el.type === 'number'){
+      var v = parseFloat(el.value);
+      return (isNaN(v) || v < 0) ? 0 : v;
+    }
+    return el.checked ? 1 : 0;
+  }
+  function num(el, key, fallback){
+    var v = parseFloat(el.getAttribute('data-' + key));
+    return isNaN(v) ? fallback : v;
+  }
+  function cost(el, p){
+    var q = qty(el);
+    if(!q || el.hasAttribute('data-pct')) return [0, 0];
+    var gmin = num(el, 'gmin', 0), gmax = num(el, 'gmax', num(el, 'gmin', 0));
+    var pmin = num(el, 'pmin', 0), pmax = num(el, 'pmax', num(el, 'pmin', 0));
+    return [(gmin + pmin * p) * q, (gmax + pmax * p) * q];
+  }
+
+  function totals(){
+    var p = pax(), min = 0, max = 0;
+    opts.forEach(function(el){
+      var c = cost(el, p);
+      min += c[0]; max += c[1];
+    });
+    opts.forEach(function(el){
+      if(el.hasAttribute('data-pct') && qty(el)){
+        var k = num(el, 'pct', 0) / 100;
+        min += min * k; max += max * k;
+      }
+    });
+    return [min, max, p];
+  }
+
+  function recalc(){
+    var t = totals(), p = t[2];
+    opts.forEach(function(el){
+      var box = priceOf(el);
+      if(!box) return;
+      var c = cost(el, p);
+      if(qty(el) && !el.hasAttribute('data-pct')){
+        box.innerHTML = span(c[0], c[1]) + ' <span>totale</span>';
+      } else {
+        box.innerHTML = box.getAttribute('data-orig') || '';
+      }
+    });
+    outGrp.textContent  = span(t[0], t[1]);
+    outEach.textContent = span(t[0] / p, t[1] / p);
+  }
+
+  /* ---- serializzazione nello hash, per condividere la configurazione ---- */
+  function snapshot(){
+    var on = [], qs = [];
+    opts.forEach(function(el){
+      if(el.type === 'number'){ qs.push(el.id.slice(2) + '~' + el.value); }
+      else if(el.checked){ on.push(el.id.slice(2)); }
+    });
+    return 'p=' + paxEl.value + (on.length ? '&s=' + on.join('.') : '') +
+           (qs.length ? '&n=' + qs.join('.') : '');
+  }
+  function apply(str){
+    if(!str) return false;
+    var parts = {};
+    str.replace(/^#/, '').split('&').forEach(function(kv){
+      var i = kv.indexOf('=');
+      if(i > 0) parts[kv.slice(0, i)] = kv.slice(i + 1);
+    });
+    if(!parts.p && !parts.s && !parts.n) return false;
+
+    if(parts.p) paxEl.value = parts.p;
+    opts.forEach(function(el){ if(el.type !== 'number') el.checked = false; });
+    (parts.s ? parts.s.split('.') : []).forEach(function(id){
+      var el = document.getElementById('o-' + id);
+      if(el) el.checked = true;
+    });
+    (parts.n ? parts.n.split('.') : []).forEach(function(pair){
+      var bits = pair.split('~');
+      var el = document.getElementById('o-' + bits[0]);
+      if(el) el.value = bits[1];
+    });
+    return true;
+  }
+  function syncHash(){
+    try{ history.replaceState(null, '', '#' + snapshot()); }catch(e){}
+  }
+  function shareUrl(){
+    return location.origin + location.pathname + '#' + snapshot();
+  }
+
+  /* ---- esportazione in testo ---- */
+  function asText(){
+    var t = totals(), p = t[2], lines = [];
+    var bare = [0, 0];
+    opts.forEach(function(el){
+      var c = cost(el, p); bare[0] += c[0]; bare[1] += c[1];
+    });
+    lines.push('MARBELLA · 30/07 – 07/08/2026');
+    lines.push('Ipotesi di budget · ' + p + ' persone');
+    lines.push('');
+    sets.forEach(function(fs){
+      var leg = fs.querySelector('legend');
+      var rows = [];
+      Array.prototype.slice.call(fs.querySelectorAll('input[id^="o-"]')).forEach(function(el){
+        var q = qty(el);
+        if(!q) return;
+        var name = labelOf(el);
+        if(el.type === 'number') name += ' ×' + q;
+        if(el.hasAttribute('data-pct')){
+          var k = num(el, 'pct', 0) / 100;
+          rows.push('  • ' + name + ' — ' + span(bare[0] * k, bare[1] * k));
+          return;
+        }
+        var c = cost(el, p);
+        rows.push('  • ' + name + ' — ' + span(c[0], c[1]));
+      });
+      if(rows.length){
+        lines.push('[' + (leg ? leg.textContent.split('—')[0].trim().toUpperCase() : '') + ']');
+        lines.push.apply(lines, rows);
+        lines.push('');
+      }
+    });
+    lines.push('---------------------------------');
+    lines.push('TOTALE GRUPPO : ' + span(t[0], t[1]));
+    lines.push('A TESTA       : ' + span(t[0] / p, t[1] / p));
+    lines.push('(volo escluso)');
+    lines.push('');
+    lines.push('Apri e modifica questa configurazione:');
+    lines.push(shareUrl());
+    return lines.join('\n');
+  }
+
+  function say(msg){
+    flash.textContent = msg;
+    clearTimeout(say._t);
+    say._t = setTimeout(function(){ flash.textContent = ''; }, 2600);
+  }
+  function copy(text, ok){
+    function fallback(){
+      outBox.value = text;
+      outBox.classList.add('show');
+      outBox.focus();
+      outBox.select();
+      say('Selezionato: premi Cmd/Ctrl + C');
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ say(ok); }, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  /* ---- eventi ---- */
+  root.addEventListener('input', function(){ recalc(); syncHash(); });
+  root.addEventListener('change', function(){ recalc(); syncHash(); });
+
+  document.getElementById('calc-copy').addEventListener('click', function(){
+    copy(asText(), 'Lista copiata ✓');
+  });
+  document.getElementById('calc-link').addEventListener('click', function(){
+    syncHash();
+    copy(shareUrl(), 'Link copiato ✓');
+  });
+  document.getElementById('calc-dl').addEventListener('click', function(){
+    var blob = new Blob([asText()], {type: 'text/plain;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'marbella-2026-budget.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    say('Scaricato ✓');
+  });
+  document.getElementById('calc-reset').addEventListener('click', function(){
+    apply(DEFAULTS);
+    outBox.classList.remove('show');
+    recalc();
+    syncHash();
+    say('Riportato ai valori di partenza');
+  });
+
+  apply(location.hash);
+  recalc();
+})();
+</script>
 </body>
 </html>
-<!-- test commit main 2026-07-25T08:10:18Z -->
