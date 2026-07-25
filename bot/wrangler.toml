@@ -9,12 +9,27 @@ compatibility_date = "2026-07-01"
 [observability]
 enabled = true
 
+# Memoria della conversazione. Il bot funziona anche senza (usa solo il
+# messaggio citato), ma per ricordarsi gli scambi precedenti serve una KV:
+#
+#   npx wrangler kv namespace create CHAT_HISTORY
+#
+# Il comando stampa un id: incollalo qui sotto e togli i commenti.
+#
+# [[kv_namespaces]]
+# binding = "CHAT_HISTORY"
+# id = "incolla-qui-l-id-stampato-dal-comando"
+
 # Variabili non segrete. I segreti (TELEGRAM_BOT_TOKEN, GEMINI_API_KEY,
 # WEBHOOK_SECRET) NON vanno qui: si impostano come secret del Worker.
 [vars]
 BOT_USERNAME = "schiavomarbellabot"
 PLAN_URL = "https://raw.githubusercontent.com/alby7503/marbella-2026/main/index.html"
 GEMINI_MODEL = "gemini-3.5-flash"
+
+# Ricerca web di Gemini. Metti "false" per spegnerla (il bot torna a
+# rispondere solo con il piano e la propria conoscenza).
+ENABLE_SEARCH = "true"
 
 # ID del gruppo Telegram autorizzato. Vuoto = chiunque trovi il bot può usarlo.
 # Scrivi /chatid nel gruppo per farti dire l'ID, poi incollalo qui.

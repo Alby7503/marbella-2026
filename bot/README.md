@@ -131,6 +131,36 @@ ALLOWED_CHAT_IDS = "-1001234567890"
 
 Il commit fa ripartire il deploy da solo. Fatto.
 
+### 9 · Memoria della conversazione (opzionale ma consigliato)
+
+Senza questo passo il bot funziona, ma **riparte da zero a ogni domanda**:
+l'unico contesto che ha è il messaggio a cui stai rispondendo, perché è
+l'unico che Telegram gli consegna. Per dargli memoria vera serve una KV di
+Cloudflare — gratis a questi volumi.
+
+Da terminale, dentro `bot/`:
+
+```bash
+npx wrangler kv namespace create CHAT_HISTORY
+```
+
+Il comando stampa qualcosa come:
+
+```
+[[kv_namespaces]]
+binding = "CHAT_HISTORY"
+id = "a1b2c3d4e5f6..."
+```
+
+Copia quell'`id`, apri `bot/wrangler.toml`, togli i commenti al blocco
+`[[kv_namespaces]]` e incolla l'id. Commit → il deploy riparte da solo.
+
+Da quel momento il bot ricorda gli ultimi **8 scambi per ogni topic**, che
+scadono dopo 7 giorni. `/dimentica` azzera la memoria di quel topic.
+
+Se salti questo passo non si rompe niente: il codice controlla se il binding
+c'è e, se manca, lavora come prima.
+
 ---
 
 ## Uso
@@ -143,7 +173,31 @@ Nel gruppo, menzionando il bot:
 
 Oppure rispondendo a un suo messaggio, senza rimenzionarlo.
 
-Comandi: `/help`, `/chatid`.
+**Con la memoria attiva** (passo 9) potete continuare il discorso senza
+ripetere il contesto:
+
+> — `/chiedi quanto costa il Caminito?`
+> — *Il biglietto è 10-18 euro a testa, più 2,50 di navetta…*
+> — `/chiedi e come ci arriviamo?`
+> — *In auto, un'ora e mezza da Marbella…*
+
+**Da dove prende le risposte**, in quest'ordine:
+
+1. **Il piano di viaggio** (`index.html`), che resta la fonte autorevole su
+   date, prezzi verificati e decisioni già prese.
+2. **La sua conoscenza generale**, quando la domanda esce dal piano — e in
+   quel caso lo dichiara ("nel piano non c'è, ma…").
+3. **La ricerca web di Google**, per tutto ciò che cambia nel tempo: meteo,
+   orari, disponibilità dei biglietti, eventi, scioperi, traffico. Quando
+   cerca davvero, in fondo al messaggio compare `Cercato online: …` con le
+   fonti.
+
+Il bot sa anche **che giorno è oggi** e quanto manca alla partenza, quindi
+"che si fa domani?" funziona.
+
+Per spegnere la ricerca web, in `wrangler.toml`: `ENABLE_SEARCH = "false"`.
+
+Comandi: `/help`, `/chatid`, `/dimentica`.
 
 ---
 
@@ -174,8 +228,16 @@ Cloudflare Workers: gratis a questi volumi.
   il contenuto delle richieste per migliorare i propri modelli (non succede
   sul tier a pagamento) — per delle domande su un viaggio è una cosa
   irrilevante, ma è corretto saperlo.
-- Il bot conosce **solo** il contenuto di `index.html`. Non ha memoria: ogni
-  domanda parte da zero, tranne il messaggio a cui stai rispondendo.
+- **Con la ricerca web attiva, le domande escono anche verso Google Search**,
+  non solo verso l'API Gemini. Vale la stessa avvertenza del punto sopra.
+- Il piano resta la fonte autorevole, ma il bot **non è più limitato a
+  quello**: può usare la propria conoscenza e cercare online. Questo vuol dire
+  che può anche sbagliare su cose che non stanno nel piano — per le decisioni
+  che contano (prenotazioni, prezzi, orari) verificate alla fonte.
+- La memoria è **per topic**: due topic diversi dello stesso gruppo hanno
+  conversazioni separate. Con la privacy mode attiva il bot legge comunque
+  solo i messaggi che lo menzionano o che rispondono a lui, quindi in memoria
+  finiscono solo quelli, non tutta la chat del gruppo.
 - Cambiare il piano non richiede rideploy — il bot rilegge il file da GitHub.
 - Se il bot smette di rispondere, controlla in ordine: il webhook
   (`https://api.telegram.org/botTOKEN/getWebhookInfo` mostra l'ultimo errore),
