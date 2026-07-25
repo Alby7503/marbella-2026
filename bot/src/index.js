@@ -17,7 +17,8 @@ const TELEGRAM_API = "https://api.telegram.org";
 const DEFAULT_MODEL = "gemini-3.5-flash";
 const PLAN_TTL_MS = 10 * 60 * 1000; // ricarica il piano al massimo ogni 10 min
 const TELEGRAM_MAX_CHARS = 4000; // il limite vero è 4096
-const GEMINI_TIMEOUT_MS = 25 * 1000; // oltre, meglio un errore che silenzio infinito
+const GEMINI_TIMEOUT_MS = 20 * 1000; // oltre, meglio un errore che silenzio infinito
+const PLAN_TIMEOUT_MS = 8 * 1000; // il download del piano deve essere rapido
 
 // Cache per-isolate: sopravvive tra richieste finché il Worker resta caldo.
 let planCache = null;
@@ -179,36 +180,26 @@ ${plan}
   const model = env.GEMINI_MODEL || DEFAULT_MODEL;
   const url = `${GEMINI_API}/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
 
-  // Senza timeout, una risposta lenta o appesa di Gemini (più probabile sul
-  // tier gratuito) lascia l'utente senza risposta all'infinito invece di
-  // arrivare al fallback qui sotto.
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
-
-  let res;
-  try {
-    res = await fetch(url, {
+  console.log(`gemini: chiamo ${model}`);
+  const res = await fetchWithTimeout(
+    url,
+    {
       method: "POST",
       headers: { "content-type": "application/json" },
-      signal: controller.signal,
       body: JSON.stringify({
         systemInstruction: { parts: { text: system } },
         contents: [{ role: "user", parts: [{ text: userContent }] }],
         generationConfig: { maxOutputTokens: 400 },
       }),
-    });
-  } catch (err) {
-    if (err.name === "AbortError") {
-      throw new Error(`gemini timeout dopo ${GEMINI_TIMEOUT_MS}ms`);
-    }
-    throw err;
-  } finally {
-    clearTimeout(timer);
-  }
+    },
+    GEMINI_TIMEOUT_MS,
+    "gemini"
+  );
 
   if (!res.ok) {
     throw new Error(`gemini ${res.status}: ${await res.text()}`);
   }
+  console.log("gemini: risposta HTTP ricevuta");
 
   const data = await res.json();
 
@@ -236,6 +227,28 @@ ${plan}
   return answer || "Non ho trovato una risposta nel piano.";
 }
 
+/* --------------------------------------------------------------------- Rete */
+
+/**
+ * fetch con timeout. Senza, una richiesta che resta appesa non solleva mai
+ * un'eccezione: il lavoro in background muore in silenzio quando Cloudflare
+ * lo interrompe, senza messaggio all'utente e senza una riga di log.
+ */
+async function fetchWithTimeout(url, options, timeoutMs, label) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (err) {
+    if (err.name === "AbortError") {
+      throw new Error(`${label}: timeout dopo ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /* -------------------------------------------------------------------- Piano */
 
 function planUrl(env) {
@@ -247,15 +260,27 @@ function planUrl(env) {
 
 async function getPlanText(env) {
   const now = Date.now();
-  if (planCache && now - planCachedAt < PLAN_TTL_MS) return planCache;
+  if (planCache && now - planCachedAt < PLAN_TTL_MS) {
+    console.log("piano: uso la copia in cache");
+    return planCache;
+  }
 
-  const res = await fetch(planUrl(env), { cf: { cacheTtl: 600 } });
+  console.log("piano: scarico da", planUrl(env));
+  const res = await fetchWithTimeout(
+    planUrl(env),
+    { cf: { cacheTtl: 600 } },
+    PLAN_TIMEOUT_MS,
+    "plan fetch"
+  );
   if (!res.ok) {
     if (planCache) return planCache; // meglio un piano vecchio che nessun piano
     throw new Error(`plan fetch ${res.status}`);
   }
 
-  planCache = htmlToText(await res.text());
+  const html = await res.text();
+  console.log(`piano: scaricato (${html.length} caratteri), converto in testo`);
+  planCache = htmlToText(html);
+  console.log(`piano: pronto (${planCache.length} caratteri di testo)`);
   planCachedAt = now;
   return planCache;
 }
