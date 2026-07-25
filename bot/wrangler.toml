@@ -31,6 +31,12 @@ GEMINI_MODEL = "gemini-3.5-flash"
 # rispondere solo con il piano e la propria conoscenza).
 ENABLE_SEARCH = "true"
 
+# TEMPORANEO, per capire perché il bot risponde sempre con lo stesso errore
+# generico: mostra il dettaglio tecnico (status HTTP, messaggio) in coda al
+# messaggio di errore. Rimetti "false" (o togli la riga) appena trovata la
+# causa: un errore interno non va mostrato nel gruppo a regime.
+DEBUG_ERRORS = "true"
+
 # ID del gruppo Telegram autorizzato. Vuoto = chiunque trovi il bot può usarlo.
 # Scrivi /chatid nel gruppo per farti dire l'ID, poi incollalo qui.
 ALLOWED_CHAT_IDS = "-1003985301142"

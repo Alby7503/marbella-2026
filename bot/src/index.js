@@ -209,6 +209,12 @@ async function handleUpdate(update, env) {
     outgoing =
       "Non riesco a rispondere in questo momento. Il piano completo è sempre qui: " +
       planUrl(env);
+    // Diagnostica temporanea: senza questo, l'unico modo per vedere la causa
+    // reale di un errore è aprire i log del Worker su Cloudflare. Si toglie
+    // rimuovendo DEBUG_ERRORS da wrangler.toml una volta capito il problema.
+    if (env.DEBUG_ERRORS === "true") {
+      outgoing += `\n\n[debug: ${String(err?.message || err).slice(0, 300)}]`;
+    }
   }
 
   // Solo gli scambi riusciti entrano in memoria: salvare un errore di rete
