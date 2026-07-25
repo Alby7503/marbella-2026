@@ -20,6 +20,13 @@ const TELEGRAM_MAX_CHARS = 4000; // il limite vero è 4096
 // Con la ricerca web attiva Gemini fa un giro in più prima di rispondere:
 // 20s erano tarati su un modello che rispondeva a memoria e stavano stretti.
 const GEMINI_TIMEOUT_MS = 45 * 1000;
+// Se il tentativo CON ricerca si blocca, si ripiega su uno SENZA ricerca: nel
+// caso peggiore le due chiamate si sommano in serie. Un timeout pieno su
+// entrambe rischierebbe fino a 90s prima di rispondere, oltre il budget
+// ragionevole per una richiesta Telegram. Il primo tentativo ha un budget
+// più corto: se si impunta, il ripiego (quello che DEVE riuscire) parte
+// presto e mantiene il totale sotto controllo.
+const GEMINI_SEARCH_TIMEOUT_MS = 20 * 1000;
 const PLAN_TIMEOUT_MS = 8 * 1000; // il download del piano deve essere rapido
 
 // Memoria della conversazione (richiede il binding KV CHAT_HISTORY).
@@ -335,7 +342,7 @@ async function callGemini(env, { system, contents, withSearch }) {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     },
-    GEMINI_TIMEOUT_MS,
+    withSearch ? GEMINI_SEARCH_TIMEOUT_MS : GEMINI_TIMEOUT_MS,
     "gemini"
   );
 }
@@ -346,14 +353,26 @@ async function askGemini(env, { question, quoted, quotedFromBot, asker, history 
   const contents = buildContents({ history, question, quoted, quotedFromBot, asker });
 
   const wantSearch = env.ENABLE_SEARCH !== "false";
-  let res = await callGemini(env, { system, contents, withSearch: wantSearch });
-
-  // Se il modello configurato non accetta il tool di ricerca, l'API risponde
-  // 400 e senza questo fallback il bot smetterebbe di funzionare del tutto.
-  // Meglio una risposta senza internet che nessuna risposta.
-  if (!res.ok && wantSearch && res.status === 400) {
-    const detail = await res.text();
-    console.error(`gemini: ricerca web rifiutata (400), riprovo senza. Dettaglio: ${detail.slice(0, 500)}`);
+  let res;
+  if (wantSearch) {
+    // Il rifiuto del tool di ricerca da parte dell'API non ha un solo codice
+    // prevedibile (400 per argomento non valido, 403 se il progetto non ha
+    // l'accesso alla grounding, un timeout se il giro in più la rallenta oltre
+    // GEMINI_TIMEOUT_MS...). Qualunque cosa succeda alla chiamata con ricerca,
+    // riprova senza invece di lasciar morire la risposta: meglio rispondere
+    // senza internet che non rispondere affatto.
+    try {
+      res = await callGemini(env, { system, contents, withSearch: true });
+      if (!res.ok) {
+        const detail = await res.text();
+        console.error(`gemini: ricerca web rifiutata (${res.status}), riprovo senza. Dettaglio: ${detail.slice(0, 500)}`);
+        res = await callGemini(env, { system, contents, withSearch: false });
+      }
+    } catch (err) {
+      console.error("gemini: chiamata con ricerca fallita, riprovo senza:", err);
+      res = await callGemini(env, { system, contents, withSearch: false });
+    }
+  } else {
     res = await callGemini(env, { system, contents, withSearch: false });
   }
 
