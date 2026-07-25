@@ -30,7 +30,16 @@ nessun'altra parte.
 2. **Account ID**: vai su *Workers & Pages*. L'ID è nella barra laterale
    destra, oppure è la stringa nell'URL subito dopo `dash.cloudflare.com/`.
    Copialo.
-3. **API token**: [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)
+3. **Sottodominio workers.dev — solo se è il primo Worker che pubblichi su
+   questo account.** Su un account nuovo, Cloudflare normalmente te lo chiede
+   al primo deploy con un prompt interattivo — cosa che GitHub Actions, non
+   essendo interattivo, non può gestire, e il deploy fallirebbe con un
+   errore secco ("This command cannot be run in a non-interactive context").
+   Registralo prima a mano: nella dashboard *Workers & Pages*, se non hai
+   ancora un Worker, ti viene proposto di scegliere un sottodominio (es.
+   `tuonome.workers.dev`) — confermalo. Se non lo vedi proporre, cerca
+   *Workers & Pages → Settings* nella dashboard.
+4. **API token**: [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)
    → *Create Token* → usa il template **Edit Cloudflare Workers** → *Continue*
    → *Create Token*. Copialo: **te lo mostra una volta sola.**
 
@@ -61,7 +70,7 @@ New repository secret**. Ne servono cinque, uno alla volta:
 
 | Nome | Valore |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | il token del passo 2.3 |
+| `CLOUDFLARE_API_TOKEN` | il token del passo 2.4 |
 | `CLOUDFLARE_ACCOUNT_ID` | l'account ID del passo 2.2 |
 | `TELEGRAM_BOT_TOKEN` | il token nuovo del passo 1 |
 | `GEMINI_API_KEY` | la chiave del passo 3 |
@@ -74,6 +83,10 @@ a far sì che il Worker accetti richieste da Telegram e da nessun altro.
 ### 5 · Deploy
 
 Repo → tab **Actions** → *Deploy bot Telegram* → **Run workflow**.
+
+Non serve creare il Worker a mano nella dashboard Cloudflare: questo comando
+lo crea da solo (usa il nome `marbella-bot` scritto in `bot/wrangler.toml`),
+la prima volta lo crea, le volte dopo lo aggiorna.
 
 Al termine, nel log del job, cerca la riga con l'URL pubblicato. Sarà tipo:
 
